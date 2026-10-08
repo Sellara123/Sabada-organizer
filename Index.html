@@ -1,1690 +1,1952 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Pengajuan Jasa EO - SABADA Organizer</title>
-    <style>
-        :root {
-            --primary-color: #4a6bff;
-            --primary-dark: #3a5bef;
-            --primary-light: #eef1ff;
-            --secondary-color: #f8f9fa;
-            --accent-color: #ff6b6b;
-            --text-color: #1a1d29;
-            --light-text: #6c757d;
-            --border-color: #e1e5eb;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --bg-color: #f5f7ff;
-            --card-bg: #ffffff;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 10px 30px rgba(74, 107, 255, 0.15);
-            --radius: 12px;
-            --radius-sm: 8px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        [data-theme="dark"] {
-            --primary-color: #6b84ff;
-            --primary-dark: #5a73ef;
-            --primary-light: #1e2235;
-            --secondary-color: #2a2e3f;
-            --text-color: #e8eaed;
-            --light-text: #9aa0a6;
-            --border-color: #3c4043;
-            --bg-color: #1a1d29;
-            --card-bg: #252836;
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-            min-height: 100vh;
-            padding: 2rem 1rem;
-        }
-
-        /* ========== TOAST NOTIFICATION ========== */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            min-width: 280px;
-            padding: 1rem 1.25rem;
-            border-radius: var(--radius-sm);
-            background: var(--card-bg);
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideInRight 0.4s ease-out;
-            border-left: 4px solid var(--primary-color);
-            color: var(--text-color);
-        }
-
-        .toast.success { border-left-color: var(--success-color); }
-        .toast.error { border-left-color: var(--accent-color); }
-        .toast.warning { border-left-color: var(--warning-color); }
-
-        .toast-icon {
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .toast-message {
-            flex: 1;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(120%); opacity: 0; }
-        }
-
-        /* ========== THEME TOGGLE ========== */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            z-index: 100;
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1) rotate(15deg);
-        }
-
-        /* ========== LAYOUT ========== */
-        .main-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        .container {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            padding: 2.5rem;
-            transition: var(--transition);
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ========== HEADER ========== */
-        .header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .header h1 {
-            color: var(--primary-color);
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header .subtitle {
-            color: var(--light-text);
-            font-size: 0.95rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .header .badge {
-            display: inline-block;
-            background: var(--primary-light);
-            color: var(--primary-color);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* ========== PROGRESS STEPS ========== */
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2.5rem;
-            position: relative;
-            padding: 0 10px;
-        }
-
-        .step-line {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            right: 20px;
-            height: 2px;
-            background: var(--border-color);
-            z-index: 1;
-        }
-
-        .step-line-progress {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
-            z-index: 1;
-            transition: width 0.5s ease;
-            width: 0;
-        }
-
-        .step {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--card-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--light-text);
-            position: relative;
-            z-index: 2;
-            border: 2px solid var(--border-color);
-            transition: var(--transition);
-            cursor: default;
-        }
-
-        .step.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-            transform: scale(1.15);
-            box-shadow: 0 0 0 4px var(--primary-light);
-        }
-
-        .step.completed {
-            background: var(--success-color);
-            color: white;
-            border-color: var(--success-color);
-        }
-
-        .step.completed::after {
-            content: '✓';
-            font-size: 14px;
-        }
-
-        .step.completed span {
-            display: none;
-        }
-
-        /* ========== FORM ========== */
-        .form-step {
-            display: none;
-            animation: slideIn 0.4s ease-out;
-        }
-
-        .form-step.active {
-            display: block;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .step-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 0.25rem;
-        }
-
-        .step-desc {
-            color: var(--light-text);
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-color);
-        }
-
-        .required::after {
-            content: " *";
-            color: var(--accent-color);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            background: var(--card-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-            font-family: inherit;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px var(--primary-light);
-        }
-
-        input.valid {
-            border-color: var(--success-color);
-        }
-
-        input.input-error {
-            border-color: var(--accent-color) !important;
-            animation: shake 0.3s ease;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .error-message {
-            color: var(--accent-color);
-            font-size: 0.8rem;
-            margin-top: 0.35rem;
-            display: none;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .error-message.show {
-            display: flex;
-        }
-
-        .error-message::before {
-            content: '⚠';
-            font-size: 0.9rem;
-        }
-
-        /* ========== BUTTONS ========== */
-        .btn-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .btn {
-            padding: 0.85rem 1.75rem;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 12px rgba(74, 107, 255, 0.3);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(74, 107, 255, 0.4);
-        }
-
-        .btn-primary:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: var(--secondary-color);
-            color: var(--text-color);
-            border: 1.5px solid var(--border-color);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: var(--border-color);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .btn.loading::after {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            right: 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ========== GAME CATEGORIES ========== */
-        .game-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .game-card {
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 1.25rem 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: var(--card-bg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .game-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-color);
-        }
-
-        .game-card.selected {
-            border-color: var(--primary-color);
-            background: var(--primary-light);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .game-card.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 22px;
-            height: 22px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            animation: popIn 0.3s ease;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .game-card img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            margin-bottom: 0.5rem;
-            border-radius: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .game-card .game-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ========== SERVICES ========== */
-        .service-section-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--light-text);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 1.5rem 0 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .service-section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        .service-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.65rem;
-        }
-
-        .service-item {
-            display: flex;
-            align-items: center;
-            padding: 0.9rem 1rem;
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            transition: var(--transition);
-            background: var(--card-bg);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .service-item:hover {
-            border-color: var(--primary-color);
-            background: var(--primary-light);
-        }
-
-        .service-item input[type="checkbox"],
-        .service-item input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 1rem;
-            accent-color: var(--primary-color);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .service-item label {
-            margin-bottom: 0;
-            flex-grow: 1;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .service-item label strong {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .service-item label .service-desc {
-            font-size: 0.8rem;
-            color: var(--light-text);
-            font-weight: 400;
-        }
-
-        .service-price {
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            margin-left: 0.5rem;
-        }
-
-        .service-item:has(input:checked) {
-            border-color: var(--primary-color);
-            background: var(--primary-light);
-        }
-
-        /* ========== PAYMENT METHODS ========== */
-        .payment-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .payment-method {
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 1.25rem 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: var(--card-bg);
-            position: relative;
-        }
-
-        .payment-method:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-color);
-        }
-
-        .payment-method.selected {
-            border-color: var(--primary-color);
-            background: var(--primary-light);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .payment-method.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 22px;
-            height: 22px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .payment-method img {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
-            margin-bottom: 0.5rem;
-            border-radius: 6px;
-        }
-
-        .payment-method .payment-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* ========== TERMS ========== */
-        .terms-container {
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 1.25rem;
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            margin-bottom: 1rem;
-            background: var(--secondary-color);
-            font-size: 0.875rem;
-            line-height: 1.7;
-            color: var(--text-color);
-            scrollbar-width: thin;
-        }
-
-        .terms-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .terms-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .terms-container::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-
-        .terms-container h3 {
-            font-size: 1rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .terms-container p {
-            margin-bottom: 0.75rem;
-            padding-left: 0.5rem;
-        }
-
-        /* ========== ORDER SUMMARY SIDEBAR ========== */
-        .order-summary {
-            position: sticky;
-            top: 2rem;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            padding: 1.5rem;
-            animation: fadeIn 0.6s ease-out 0.2s backwards;
-        }
-
-        .order-summary h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .order-summary h3::before {
-            content: '📋';
-        }
-
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            font-size: 0.85rem;
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        .summary-item:last-of-type {
-            border-bottom: none;
-        }
-
-        .summary-label {
-            color: var(--light-text);
-        }
-
-        .summary-value {
-            font-weight: 600;
-            color: var(--text-color);
-            text-align: right;
-            max-width: 60%;
-            word-break: break-word;
-        }
-
-        .summary-services {
-            margin: 0.75rem 0;
-            padding: 0.75rem;
-            background: var(--secondary-color);
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-        }
-
-        .summary-services .empty {
-            color: var(--light-text);
-            text-align: center;
-            font-style: italic;
-        }
-
-        .summary-service-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.3rem 0;
-            font-size: 0.8rem;
-        }
-
-        .summary-service-item .name {
-            color: var(--text-color);
-            flex: 1;
-        }
-
-        .summary-service-item .price {
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .summary-total {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 2px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .summary-total .label {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .summary-total .amount {
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: var(--success-color);
-        }
-
-        .summary-total .amount.empty {
-            color: var(--light-text);
-            font-size: 0.9rem;
-        }
-
-        /* ========== SUCCESS MODAL ========== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9998;
-            padding: 1rem;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 2.5rem;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes modalIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1.5rem;
-            background: var(--success-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: white;
-            animation: popIn 0.5s ease 0.2s backwards;
-        }
-
-        .modal h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal p {
-            color: var(--light-text);
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
-        }
-
-        .modal .btn {
-            width: 100%;
-            justify-content: center;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 1024px) {
-            .main-wrapper {
-                grid-template-columns: 1fr;
-            }
-            .order-summary {
-                position: static;
-                order: -1;
-            }
-        }
-
-        @media (max-width: 640px) {
-            body {
-                padding: 1rem 0.5rem;
-            }
-            .container {
-                padding: 1.5rem 1rem;
-            }
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            .step-indicator {
-                padding: 0 5px;
-            }
-            .step {
-                width: 28px;
-                height: 28px;
-                font-size: 0.75rem;
-            }
-            .step-line, .step-line-progress {
-                top: 13px;
-            }
-            .game-categories, .payment-methods {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .btn-group {
-                flex-direction: column-reverse;
-            }
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            .theme-toggle {
-                top: 10px;
-                left: 10px;
-                width: 38px;
-                height: 38px;
-                font-size: 16px;
-            }
-            .toast-container {
-                top: 10px;
-                right: 10px;
-                left: 10px;
-            }
-            .toast {
-                min-width: auto;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Pengajuan Jasa EO — SABADA Organizer</title>
+<style>
+:root{
+  --primary:#4f46e5;
+  --primary-dark:#4338ca;
+  --primary-light:#eef2ff;
+  --primary-soft:#f5f7ff;
+  --accent:#e11d48;
+  --success:#059669;
+  --success-light:#ecfdf5;
+  --warning:#d97706;
+  --text:#0f172a;
+  --text-soft:#475569;
+  --muted:#94a3b8;
+  --border:#e2e8f0;
+  --border-strong:#cbd5e1;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.04);
+  --shadow:0 4px 16px rgba(15,23,42,.06);
+  --shadow-lg:0 20px 50px -12px rgba(79,70,229,.18);
+  --radius:14px;
+  --radius-sm:10px;
+  --radius-xs:8px;
+  --transition:all .25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"]{
+  --primary:#818cf8;
+  --primary-dark:#6366f1;
+  --primary-light:#1e1b4b;
+  --primary-soft:#1e293b;
+  --text:#f1f5f9;
+  --text-soft:#cbd5e1;
+  --muted:#64748b;
+  --border:#334155;
+  --border-strong:#475569;
+  --bg:#0f172a;
+  --card:#1e293b;
+  --shadow-lg:0 20px 50px -12px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;padding:1.5rem 1rem;transition:background .3s,color .3s;font-size:15px}
+
+/* ICON */
+.icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;vertical-align:middle}
+.icon-sm{width:15px;height:15px}
+.icon-lg{width:22px;height:22px}
+
+/* FLOATING BUTTONS */
+.fab-group{position:fixed;top:1rem;right:1rem;display:flex;gap:.5rem;z-index:200}
+.fab{width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);transition:var(--transition)}
+.fab:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--primary)}
+.fab:active{transform:translateY(0)}
+
+/* TOAST */
+.toast-container{position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:.5rem;align-items:center;pointer-events:none}
+.toast{min-width:280px;max-width:90vw;padding:.85rem 1rem;border-radius:var(--radius-sm);background:var(--card);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:.75rem;border-left:3px solid var(--primary);animation:toastIn .3s ease;font-size:.875rem;font-weight:500;pointer-events:auto;color:var(--text)}
+.toast.success{border-left-color:var(--success)}
+.toast.error{border-left-color:var(--accent)}
+.toast.warning{border-left-color:var(--warning)}
+.toast .icon{color:var(--primary)}
+.toast.success .icon{color:var(--success)}
+.toast.error .icon{color:var(--accent)}
+.toast.warning .icon{color:var(--warning)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-20px)}}
+
+/* LAYOUT */
+.main-wrapper{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:1.5rem;align-items:start}
+
+/* HEADER */
+.page-header{text-align:center;margin-bottom:1.75rem}
+.brand-mark{display:inline-flex;align-items:center;gap:.5rem;background:var(--primary-light);color:var(--primary);padding:.4rem .9rem;border-radius:100px;font-size:.75rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.9rem;border:1px solid rgba(79,70,229,.15)}
+.brand-mark .icon{width:14px;height:14px}
+.page-header h1{font-size:1.85rem;font-weight:800;letter-spacing:-.5px;color:var(--text);margin-bottom:.4rem}
+.page-header h1 span{color:var(--primary)}
+.page-header p{color:var(--text-soft);font-size:.9rem;max-width:560px;margin:0 auto}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:2rem;border:1px solid var(--border)}
+
+/* PROGRESS */
+.progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;font-size:.8rem;font-weight:600}
+.progress-info .step-count{color:var(--primary);display:flex;align-items:center;gap:.35rem}
+.progress-info .step-name{color:var(--muted)}
+.progress-bar{height:6px;background:var(--border);border-radius:100px;overflow:hidden;margin-bottom:1.75rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#7c3aed);border-radius:100px;width:0;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* STEP INDICATOR */
+.step-indicator{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;margin-bottom:2rem;position:relative}
+.step-indicator::before{content:'';position:absolute;top:16px;left:8%;right:8%;height:2px;background:var(--border);z-index:0}
+.step-node{display:flex;flex-direction:column;align-items:center;gap:.4rem;position:relative;z-index:1;cursor:default}
+.step-circle{width:34px;height:34px;border-radius:50%;background:var(--card);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700;font-size:.8rem;transition:var(--transition)}
+.step-node.active .step-circle{background:var(--primary);border-color:var(--primary);color:#fff;transform:scale(1.1);box-shadow:0 0 0 5px var(--primary-light)}
+.step-node.completed .step-circle{background:var(--success);border-color:var(--success);color:#fff}
+.step-node .step-label{font-size:.68rem;color:var(--muted);font-weight:600;text-align:center;text-transform:uppercase;letter-spacing:.3px}
+.step-node.active .step-label{color:var(--primary)}
+.step-node.completed .step-label{color:var(--success)}
+
+/* FORM */
+.form-step{display:none}
+.form-step.active{display:block;animation:stepIn .35s ease}
+@keyframes stepIn{from{opacity:0;transform:translateX(15px)}to{opacity:1;transform:translateX(0)}}
+.step-header{margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.step-header h2{font-size:1.15rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem}
+.step-header h2 .icon{color:var(--primary)}
+.step-header p{color:var(--text-soft);font-size:.85rem}
+
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.form-group{margin-bottom:1.1rem}
+.form-group.full{grid-column:1/-1}
+label{display:block;margin-bottom:.4rem;font-weight:600;font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.35rem}
+label .icon{width:14px;height:14px;color:var(--muted)}
+label.required::after{content:'*';color:var(--accent);font-weight:700;margin-left:2px}
+.hint{font-size:.72rem;color:var(--muted);font-weight:400;margin-left:auto;font-style:italic}
+input,select,textarea{width:100%;padding:.7rem .85rem;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:.9rem;background:var(--card);color:var(--text);transition:var(--transition);font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+input.valid{border-color:var(--success);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");background-repeat:no-repeat;background-position:right .75rem center;background-size:16px;padding-right:2.25rem}
+input.input-error,select.input-error,textarea.input-error{border-color:var(--accent)!important;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.input-group{position:relative}
+.input-group input{padding-left:2.25rem}
+.input-group .input-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;width:16px;height:16px}
+.error-message{color:var(--accent);font-size:.75rem;margin-top:.3rem;display:none;align-items:center;gap:.3rem}
+.error-message.show{display:flex}
+
+/* SECTIONS */
+.form-section{margin-bottom:1.5rem;padding:1.15rem;background:var(--primary-soft);border-radius:var(--radius-sm);border:1px solid var(--border)}
+[data-theme="dark"] .form-section{background:rgba(129,140,248,.06)}
+.form-section-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
+
+/* GAME CARDS */
+.game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.85rem}
+.game-card{border:2px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center;cursor:pointer;transition:var(--transition);background:var(--card);position:relative}
+.game-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--primary)}
+.game-card.selected{border-color:var(--primary);background:var(--primary-light)}
+.game-card.selected::after{content:'✓';position:absolute;top:6px;right:6px;width:22px;height:22px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;animation:popIn .3s ease}
+@keyframes popIn{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+.game-card .game-icon{width:56px;height:56px;margin:0 auto .5rem;border-radius:10px;object-fit:cover;display:block;background:var(--primary-light)}
+.game-card .game-name{font-weight:600;font-size:.85rem}
+
+/* SUB CATEGORIES (chips) */
+.chip-group{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{padding:.45rem .85rem;border:1.5px solid var(--border);border-radius:100px;font-size:.8rem;font-weight:500;cursor:pointer;transition:var(--transition);background:var(--card);color:var(--text-soft);display:inline-flex;align-items:center;gap:.35rem}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.chip.selected{background:var(--primary);border-color:var(--primary);color:#fff}
+
+/* SERVICE ITEMS */
+.service-list{display:flex;flex-direction:column;gap:.55rem}
+.service-item{display:flex;align-items:center;gap:.85rem;padding:.85rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-xs);background:var(--card);transition:var(--transition);cursor:pointer}
+.service-item:hover{border-color:var(--primary)}
+.service-item.checked{border-color:var(--primary);background:var(--primary-light)}
+.service-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0}
+.service-info{flex:1;min-width:0}
+.service-info strong{display:block;font-weight:600;font-size:.86rem;color:var(--text)}
+.service-info span{display:block;font-size:.75rem;color:var(--text-soft);margin-top:2px}
+.service-price-tag{font-weight:700;font-size:.85rem;color:var(--primary);white-space:nowrap}
+.qty-control{display:none;align-items:center;gap:.35rem;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:.15rem}
+.service-item.checked .qty-control{display:flex}
+.qty-btn{width:24px;height:24px;border-radius:50%;border:none;background:var(--primary-light);color:var(--primary);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;line-height:1;transition:var(--transition)}
+.qty-btn:hover{background:var(--primary);color:#fff}
+.qty-val{min-width:22px;text-align:center;font-size:.8rem;font-weight:700;color:var(--text)}
+
+/* PAYMENT */
+.payment-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.75rem}
+.payment-card{border:2px solid var(--border);border-radius:var(--radius-xs);padding:1rem .75rem;text-align:center;cursor:pointer;transition:var(--transition);background:var(--card);position:relative}
+.payment-card:hover{transform:translateY(-2px);border-color:var(--primary);box-shadow:var(--shadow)}
+.payment-card.selected{border-color:var(--primary);background:var(--primary-light)}
+.payment-card.selected::after{content:'✓';position:absolute;top:6px;right:6px;width:20px;height:20px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.payment-card img{width:42px;height:42px;object-fit:contain;margin-bottom:.4rem;border-radius:6px}
+.payment-card .pay-name{font-weight:600;font-size:.82rem}
+
+/* TERMS */
+.terms-box{max-height:260px;overflow-y:auto;padding:1.15rem;border:1.5px solid var(--border);border-radius:var(--radius-xs);background:var(--bg);margin-bottom:1rem;font-size:.83rem;line-height:1.7;color:var(--text-soft)}
+.terms-box::-webkit-scrollbar{width:6px}
+.terms-box::-webkit-scrollbar-track{background:transparent}
+.terms-box::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+.terms-box h3{font-size:.92rem;color:var(--primary);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.4rem}
+.terms-box ol{padding-left:1.25rem}
+.terms-box li{margin-bottom:.55rem}
+.terms-agree{display:flex;align-items:flex-start;gap:.6rem;padding:1rem;background:var(--primary-soft);border-radius:var(--radius-xs);border:1px solid var(--border)}
+.terms-agree input{width:18px;height:18px;margin-top:2px;accent-color:var(--primary);cursor:pointer;flex-shrink:0}
+.terms-agree label{margin:0;font-weight:500;font-size:.85rem;cursor:pointer;color:var(--text)}
+
+/* BUTTONS */
+.btn-row{display:flex;justify-content:space-between;gap:.75rem;margin-top:1.75rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+.btn{padding:.75rem 1.4rem;border:none;border-radius:var(--radius-xs);font-size:.875rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.45rem;font-family:inherit;transition:var(--transition);position:relative}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(79,70,229,.28)}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 8px 18px rgba(79,70,229,.35)}
+.btn-secondary{background:var(--card);color:var(--text-soft);border:1.5px solid var(--border)}
+.btn-secondary:hover:not(:disabled){background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.loading::after{content:'';width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUMMARY SIDEBAR */
+.summary{position:sticky;top:1rem;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-lg);border:1px solid var(--border);overflow:hidden;animation:stepIn .5s ease}
+.summary-head{padding:1.1rem 1.25rem;background:linear-gradient(135deg,var(--primary),#7c3aed);color:#fff;display:flex;align-items:center;justify-content:space-between}
+.summary-head h3{font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
+.summary-body{padding:1.25rem;max-height:calc(100vh - 180px);overflow-y:auto}
+.summary-body::-webkit-scrollbar{width:5px}
+.summary-body::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+.summary-section{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px dashed var(--border)}
+.summary-section:last-of-type{border-bottom:none}
+.summary-section-title{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.55rem;display:flex;align-items:center;gap:.35rem}
+.summary-row{display:flex;justify-content:space-between;gap:.5rem;padding:.3rem 0;font-size:.8rem}
+.summary-row .k{color:var(--text-soft)}
+.summary-row .v{font-weight:600;color:var(--text);text-align:right;max-width:60%;word-break:break-word}
+.summary-row .v.empty{color:var(--muted);font-weight:400;font-style:italic}
+.summary-list{font-size:.78rem;display:flex;flex-direction:column;gap:.35rem}
+.summary-list .empty{color:var(--muted);font-style:italic;text-align:center;padding:.5rem 0}
+.summary-list .item{display:flex;justify-content:space-between;gap:.5rem;padding:.3rem .55rem;background:var(--bg);border-radius:6px}
+.summary-list .item .n{color:var(--text);flex:1}
+.summary-list .item .p{color:var(--primary);font-weight:700;white-space:nowrap;font-size:.75rem}
+.summary-total{padding:1rem 1.25rem;background:var(--primary-soft);border-top:2px solid var(--primary);display:flex;justify-content:space-between;align-items:center}
+.summary-total .label{font-weight:700;font-size:.85rem;color:var(--text)}
+.summary-total .amount{font-weight:800;font-size:1.15rem;color:var(--primary)}
+.summary-total .amount.empty{color:var(--muted);font-size:.85rem;font-weight:600}
+
+/* DRAFT BANNER */
+.draft-banner{background:var(--warning);color:#fff;padding:.65rem 1rem;border-radius:var(--radius-xs);font-size:.82rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem;animation:stepIn .3s ease}
+.draft-banner button{background:rgba(255,255,255,.25);border:none;color:#fff;padding:.35rem .75rem;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;transition:var(--transition)}
+.draft-banner button:hover{background:rgba(255,255,255,.4)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:9998;padding:1rem}
+.modal-overlay.show{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--card);border-radius:var(--radius);padding:2rem;max-width:440px;width:100%;text-align:center;animation:modalIn .4s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes modalIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-icon{width:70px;height:70px;margin:0 auto 1.25rem;background:var(--success-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.modal-icon .icon{width:36px;height:36px;color:var(--success);stroke-width:2.5}
+.modal h3{font-size:1.25rem;margin-bottom:.5rem;color:var(--text)}
+.modal p{color:var(--text-soft);font-size:.88rem;margin-bottom:1.25rem}
+.modal .btn{width:100%}
+
+/* INFO CALLOUT */
+.callout{padding:.75rem .9rem;background:var(--primary-light);border-left:3px solid var(--primary);border-radius:6px;font-size:.8rem;color:var(--text-soft);display:flex;gap:.5rem;align-items:flex-start;margin-bottom:1rem}
+.callout .icon{color:var(--primary);flex-shrink:0;margin-top:2px}
+.callout strong{color:var(--primary)}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .main-wrapper{grid-template-columns:1fr}
+  .summary{position:static;order:-1}
+  .summary-body{max-height:none}
+}
+@media(max-width:640px){
+  body{padding:1rem .75rem}
+  .card{padding:1.25rem}
+  .page-header h1{font-size:1.4rem}
+  .form-grid{grid-template-columns:1fr}
+  .step-indicator{grid-template-columns:repeat(6,1fr);gap:.25rem}
+  .step-node .step-label{display:none}
+  .step-circle{width:30px;height:30px;font-size:.75rem}
+  .btn-row{flex-direction:column-reverse}
+  .btn{width:100%}
+  .fab-group{top:.5rem;right:.5rem}
+  .game-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
 </head>
 <body>
-    <!-- Theme Toggle -->
-    <button class="theme-toggle" id="themeToggle" title="Ganti Tema">🌙</button>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+<!-- FLOATING CONTROLS -->
+<div class="fab-group">
+  <button class="fab" id="themeToggle" title="Ganti tema">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+  <button class="fab" id="saveDraftBtn" title="Simpan draft">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+  </button>
+</div>
 
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="successModal">
-        <div class="modal">
-            <div class="modal-icon">✓</div>
-            <h3>Pengajuan Terkirim!</h3>
-            <p>Anda akan diarahkan ke WhatsApp admin. Terima kasih telah mempercayai SABADA Organizer.</p>
-            <button class="btn btn-primary" onclick="document.getElementById('successModal').classList.remove('show')">Tutup</button>
-        </div>
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h3>Pengajuan Berhasil Dikirim</h3>
+    <p>Anda akan diarahkan ke WhatsApp admin dalam beberapa detik. Simpan nomor admin untuk komunikasi lebih lanjut.</p>
+    <button class="btn btn-primary" onclick="document.getElementById('successModal').classList.remove('show')">
+      <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      Mengerti
+    </button>
+  </div>
+</div>
+
+<div class="main-wrapper">
+  <!-- MAIN FORM -->
+  <div>
+    <div class="page-header">
+      <span class="brand-mark">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2 15 9l7 .5-5.5 4.5L18 21l-6-3.5L6 21l1.5-7L2 9.5 9 9z"/></svg>
+        Event Organizer
+      </span>
+      <h1>SABADA <span>Organizer</span></h1>
+      <p>Formulir pengajuan jasa Event Organizer lengkap. Isi semua data dengan benar agar proses lebih cepat.</p>
     </div>
 
-    <div class="main-wrapper">
-        <div class="container">
-            <!-- Header -->
-            <div class="header">
-                <span class="badge">🎮 Event Organizer</span>
-                <h1>SABADA ORGANIZER</h1>
-                <p class="subtitle">Isi formulir pengajuan jasa EO dengan lengkap dan benar untuk memproses pesanan Anda.</p>
-            </div>
+    <div class="card">
+      <!-- DRAFT BANNER -->
+      <div class="draft-banner" id="draftBanner" style="display:none">
+        <span style="display:flex;align-items:center;gap:.5rem">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="draftText">Draft tersedia</span>
+        </span>
+        <span style="display:flex;gap:.5rem">
+          <button onclick="loadDraft()">Muat</button>
+          <button onclick="clearDraft()">Hapus</button>
+        </span>
+      </div>
 
-            <!-- Step Indicator -->
-            <div class="step-indicator">
-                <div class="step-line"></div>
-                <div class="step-line-progress" id="stepLineProgress"></div>
-                <div class="step active" id="step1"><span>1</span></div>
-                <div class="step" id="step2"><span>2</span></div>
-                <div class="step" id="step3"><span>3</span></div>
-                <div class="step" id="step4"><span>4</span></div>
-                <div class="step" id="step5"><span>5</span></div>
-                <div class="step" id="step6"><span>6</span></div>
-            </div>
+      <!-- PROGRESS INFO -->
+      <div class="progress-info">
+        <span class="step-count">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="progressText">Tahap 1 dari 6</span>
+        </span>
+        <span class="step-name" id="progressName">Data Diri</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-            <!-- Step 1: Data Diri -->
-            <div class="form-step active" id="step1Form">
-                <h2 class="step-title">Data Diri</h2>
-                <p class="step-desc">Lengkapi informasi pribadi Anda</p>
+      <!-- STEP INDICATOR -->
+      <div class="step-indicator">
+        <div class="step-node active" data-step="1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Diri</div>
+        </div>
+        <div class="step-node" data-step="2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Event</div>
+        </div>
+        <div class="step-node" data-step="3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Game</div>
+        </div>
+        <div class="step-node" data-step="4">
+          <div class="step-circle">4</div>
+          <div class="step-label">Layanan</div>
+        </div>
+        <div class="step-node" data-step="5">
+          <div class="step-circle">5</div>
+          <div class="step-label">Bayar</div>
+        </div>
+        <div class="step-node" data-step="6">
+          <div class="step-circle">6</div>
+          <div class="step-label">Selesai</div>
+        </div>
+      </div>
 
-                <div class="form-group">
-                    <label for="fullName" class="required">Nama Lengkap</label>
-                    <input type="text" id="fullName" placeholder="Masukkan nama lengkap Anda" autocomplete="name">
-                    <span class="error-message" id="fullNameError">Nama lengkap wajib diisi</span>
-                </div>
-                <div class="form-group">
-                    <label for="communityName" class="required">Nama Komunitas</label>
-                    <input type="text" id="communityName" placeholder="Contoh: SABADA Esports Community">
-                    <span class="error-message" id="communityNameError">Nama komunitas wajib diisi</span>
-                </div>
-                <div class="form-group">
-                    <label for="whatsappNumber" class="required">Nomor WhatsApp</label>
-                    <input type="tel" id="whatsappNumber" placeholder="Contoh: 081234567890" autocomplete="tel" inputmode="numeric">
-                    <span class="error-message" id="whatsappError">Nomor WhatsApp wajib diisi (10-15 digit)</span>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" disabled>← Sebelumnya</button>
-                    <button class="btn btn-primary" id="next1">Lanjutkan →</button>
-                </div>
-            </div>
-
-            <!-- Step 2: Detail Kegiatan -->
-            <div class="form-step" id="step2Form">
-                <h2 class="step-title">Detail Event</h2>
-                <p class="step-desc">Tentukan waktu dan durasi pelaksanaan event</p>
-
-                <div class="form-group">
-                    <label for="eventDuration" class="required">Durasi Event</label>
-                    <select id="eventDuration">
-                        <option value="" disabled selected>-- Pilih durasi event --</option>
-                    </select>
-                    <span class="error-message" id="durationError">Durasi event wajib dipilih</span>
-                </div>
-                <div class="form-group">
-                    <label for="eventDate" class="required">Tanggal Pelaksanaan</label>
-                    <input type="date" id="eventDate">
-                    <span class="error-message" id="dateError">Tanggal pelaksanaan wajib diisi</span>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" id="prev2">← Sebelumnya</button>
-                    <button class="btn btn-primary" id="next2">Lanjutkan →</button>
-                </div>
-            </div>
-
-            <!-- Step 3: Pilih Game -->
-            <div class="form-step" id="step3Form">
-                <h2 class="step-title">Kategori Game</h2>
-                <p class="step-desc">Pilih game yang akan dipertandingkan</p>
-
-                <div class="form-group">
-                    <div class="game-categories" id="gameCategories"></div>
-                    <span class="error-message" id="gameError">Pilih salah satu kategori game</span>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" id="prev3">← Sebelumnya</button>
-                    <button class="btn btn-primary" id="next3">Lanjutkan →</button>
-                </div>
-            </div>
-
-            <!-- Step 4: Pilih Jasa EO -->
-            <div class="form-step" id="step4Form">
-                <h2 class="step-title">Pilih Jasa EO</h2>
-                <p class="step-desc">Pilih layanan yang Anda butuhkan</p>
-
-                <div class="service-section-title">Layanan Utama</div>
-                <div class="service-options" id="serviceOptions"></div>
-
-                <div class="service-section-title">Layanan Tambahan</div>
-                <div class="service-options" id="additionalServicesContainer"></div>
-
-                <div class="btn-group">
-                    <button class="btn btn-secondary" id="prev4">← Sebelumnya</button>
-                    <button class="btn btn-primary" id="next4">Lanjutkan ke Pembayaran →</button>
-                </div>
-            </div>
-
-            <!-- Step 5: Metode Pembayaran -->
-            <div class="form-step" id="step5Form">
-                <h2 class="step-title">Metode Pembayaran</h2>
-                <p class="step-desc">Pilih metode pembayaran yang Anda inginkan</p>
-
-                <div class="form-group">
-                    <div class="payment-methods" id="paymentMethods"></div>
-                    <span class="error-message" id="paymentError">Pilih metode pembayaran</span>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" id="prev5">← Sebelumnya</button>
-                    <button class="btn btn-primary" id="next5">Lanjutkan →</button>
-                </div>
-            </div>
-
-            <!-- Step 6: Syarat & Ketentuan -->
-            <div class="form-step" id="step6Form">
-                <h2 class="step-title">Syarat & Ketentuan</h2>
-                <p class="step-desc">Baca dan setujui syarat & ketentuan sebelum mengirim</p>
-
-                <div class="form-group">
-                    <div class="terms-container" id="termsContainer">
-                        <h3>Syarat dan Ketentuan Pengajuan Jasa EO</h3>
-                        <p>1. Untuk Pembayaran Dapat Melalui All E-wallet dan QRIS.</p>
-                        <p>2. Proses Pengerjaan Selama 7 hari kerja sesuai antrian (jika ada).</p>
-                        <p>3. Harga Tidak Dapat di Nego.</p>
-                        <p>4. Revisi Hanya Diperbolehkan Sebanyak 5x.</p>
-                        <p>5. Khusus Desain File Akan Dikirim Dalam Bentuk (dokumen, Png, Zip).</p>
-                        <p>6. Untuk Livestreaming Bisa Request Akun di beberapa platform Customer (Jika Tidak Request akan dialihkan ke channel khusus Sabada Organizer).</p>
-                        <p>7. Ada Sistem Garansi (Jika Ada kesalahan Teknis, Human Error, atau dari Pihak Admin Uang Akan Dikembalikan 100%).</p>
-                        <p>8. Admin Memiliki Hak Untuk memposting Hasil Orderan Dengan Watermark Apabila Diperlukan Untuk Kebutuhan Sample Dan Portofolio.</p>
-                        <p>9. Lama Pengerjaan design Serta overlay 1-7 hari tergantung tingkat kesulitan, kondisi, Dan antrian.</p>
-                        <p>10. Antrian Bisa dipercepat tapi harus ada biaya tambahan.</p>
-                        <p>11. Setiap setelah order disepakati dari pihak pembeli, pembeli wajib memberikan bukti pembayaran terlebih dahulu sebagai gantinya admin akan memberikan garansi 100% uang kembali jika terjadi kesalahan (khusus event order DLL).</p>
-                    </div>
-                    <div class="service-item">
-                        <input type="checkbox" id="agreeTerms">
-                        <label for="agreeTerms">Saya menerima Syarat & Ketentuan yang berlaku.</label>
-                    </div>
-                    <span class="error-message" id="termsError">Anda harus menyetujui syarat dan ketentuan</span>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" id="prev6">← Sebelumnya</button>
-                    <button class="btn btn-primary" id="submitForm">🚀 Kirim Pengajuan</button>
-                </div>
-            </div>
+      <!-- ============ STEP 1: DATA DIRI ============ -->
+      <div class="form-step active" id="step1Form">
+        <div class="step-header">
+          <h2>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Data Diri Pemesan
+          </h2>
+          <p>Lengkapi data diri Anda sebagai penanggung jawab pengajuan</p>
         </div>
 
-        <!-- Order Summary Sidebar -->
-        <aside class="order-summary">
-            <h3>Ringkasan Pesanan</h3>
-            <div class="summary-item">
-                <span class="summary-label">Nama</span>
-                <span class="summary-value" id="summaryName">-</span>
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Identitas Pribadi
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fullName" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Nama Lengkap
+              </label>
+              <input type="text" id="fullName" placeholder="Sesuai KTP" autocomplete="name">
+              <span class="error-message" id="fullNameError">Nama lengkap wajib diisi minimal 3 karakter</span>
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Komunitas</span>
-                <span class="summary-value" id="summaryCommunity">-</span>
+            <div class="form-group">
+              <label for="nickname">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2 15 9l7 .5-5.5 4.5L18 21l-6-3.5L6 21l1.5-7L2 9.5 9 9z"/></svg>
+                Nama Panggilan / IGN
+              </label>
+              <input type="text" id="nickname" placeholder="Contoh: RyzenX">
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Game</span>
-                <span class="summary-value" id="summaryGame">-</span>
+            <div class="form-group">
+              <label for="email" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Email Aktif
+              </label>
+              <input type="email" id="email" placeholder="nama@email.com" autocomplete="email">
+              <span class="error-message" id="emailError">Format email tidak valid</span>
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Tanggal</span>
-                <span class="summary-value" id="summaryDate">-</span>
+            <div class="form-group">
+              <label for="whatsappNumber" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Nomor WhatsApp
+              </label>
+              <input type="tel" id="whatsappNumber" placeholder="08xxxxxxxxxx" inputmode="numeric" autocomplete="tel">
+              <span class="error-message" id="whatsappError">Nomor WhatsApp 10-15 digit angka</span>
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Durasi</span>
-                <span class="summary-value" id="summaryDuration">-</span>
+            <div class="form-group">
+              <label for="whatsappBackup">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                WhatsApp Cadangan
+              </label>
+              <input type="tel" id="whatsappBackup" placeholder="Opsional" inputmode="numeric">
             </div>
-            <div class="summary-services">
-                <div style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.8rem; color: var(--light-text);">LAYANAN</div>
-                <div id="summaryServices">
-                    <div class="empty">Belum ada layanan dipilih</div>
-                </div>
+            <div class="form-group">
+              <label for="discord">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Username Discord
+              </label>
+              <input type="text" id="discord" placeholder="user#0000 atau user.name">
             </div>
-            <div class="summary-item">
-                <span class="summary-label">Pembayaran</span>
-                <span class="summary-value" id="summaryPayment">-</span>
+            <div class="form-group">
+              <label for="instagram">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                Username Instagram
+              </label>
+              <input type="text" id="instagram" placeholder="@username (opsional)">
             </div>
-            <div class="summary-total">
-                <span class="label">Total</span>
-                <span class="amount empty" id="summaryTotal">Rp 0</span>
+            <div class="form-group">
+              <label for="nik">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                NIK (Opsional)
+              </label>
+              <input type="text" id="nik" placeholder="16 digit" inputmode="numeric" maxlength="16">
             </div>
-        </aside>
+            <div class="form-group">
+              <label for="birthDate">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Tanggal Lahir
+              </label>
+              <input type="date" id="birthDate">
+            </div>
+            <div class="form-group full">
+              <label for="address" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Alamat Lengkap
+              </label>
+              <input type="text" id="address" placeholder="Jalan, nomor rumah, RT/RW">
+              <span class="error-message" id="addressError">Alamat wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="city" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+                Kota/Kabupaten
+              </label>
+              <input type="text" id="city" placeholder="Contoh: Bandung">
+              <span class="error-message" id="cityError">Kota wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="province" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Provinsi
+              </label>
+              <select id="province">
+                <option value="">-- Pilih Provinsi --</option>
+              </select>
+              <span class="error-message" id="provinceError">Provinsi wajib dipilih</span>
+            </div>
+            <div class="form-group">
+              <label for="postalCode">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/></svg>
+                Kode Pos
+              </label>
+              <input type="text" id="postalCode" placeholder="5 digit" inputmode="numeric" maxlength="5">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Data Komunitas / Organisasi
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="communityName" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Nama Komunitas
+              </label>
+              <input type="text" id="communityName" placeholder="Contoh: SABADA Esports">
+              <span class="error-message" id="communityNameError">Nama komunitas wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="communityType">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                Jenis Komunitas
+              </label>
+              <select id="communityType">
+                <option value="">-- Pilih --</option>
+                <option value="Esports Team">Esports Team</option>
+                <option value="Gaming Community">Gaming Community</option>
+                <option value="Streamer Group">Streamer Group</option>
+                <option value="Sekolah/Kampus">Sekolah/Kampus</option>
+                <option value="Perusahaan">Perusahaan</option>
+                <option value="Individu">Individu</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="memberCount">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Jumlah Anggota
+              </label>
+              <input type="number" id="memberCount" placeholder="Contoh: 50" min="1">
+            </div>
+            <div class="form-group">
+              <label for="foundedYear">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                Tahun Berdiri
+              </label>
+              <input type="number" id="foundedYear" placeholder="Contoh: 2020" min="1900" max="2099">
+            </div>
+            <div class="form-group">
+              <label for="communityInstagram">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>
+                Instagram Komunitas
+              </label>
+              <input type="text" id="communityInstagram" placeholder="@komunitas">
+            </div>
+            <div class="form-group">
+              <label for="communityWebsite">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Website / Linktree
+              </label>
+              <input type="url" id="communityWebsite" placeholder="https://...">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Kontak Darurat
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="emergencyName">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Nama Kontak Darurat
+              </label>
+              <input type="text" id="emergencyName" placeholder="Nama kerabat/partner">
+            </div>
+            <div class="form-group">
+              <label for="emergencyPhone">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Nomor Kontak Darurat
+              </label>
+              <input type="tel" id="emergencyPhone" placeholder="08xxxxxxxxxx" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" disabled>
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn btn-primary" id="next1">
+            Lanjutkan
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ STEP 2: DETAIL EVENT ============ -->
+      <div class="form-step" id="step2Form">
+        <div class="step-header">
+          <h2>
+            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Detail Event
+          </h2>
+          <p>Isi informasi lengkap tentang event yang akan diselenggarakan</p>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Informasi Event
+          </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="eventName" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                Nama Event
+              </label>
+              <input type="text" id="eventName" placeholder="Contoh: SABADA Bloodstrike Championship Season 3">
+              <span class="error-message" id="eventNameError">Nama event wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="eventType" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                Jenis Event
+              </label>
+              <select id="eventType">
+                <option value="">-- Pilih Jenis --</option>
+                <option value="Turnamen Online">Turnamen Online</option>
+                <option value="Turnamen Offline">Turnamen Offline</option>
+                <option value="Hybrid Tournament">Hybrid Tournament</option>
+                <option value="Fun Match">Fun Match</option>
+                <option value="Scrim/Showmatch">Scrim / Showmatch</option>
+                <option value="Launching Event">Launching Event</option>
+                <option value="Community Gathering">Community Gathering</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+              <span class="error-message" id="eventTypeError">Jenis event wajib dipilih</span>
+            </div>
+            <div class="form-group">
+              <label for="eventScale">
+                <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Skala Event
+              </label>
+              <select id="eventScale">
+                <option value="">-- Pilih --</option>
+                <option value="Lokal">Lokal (Kota)</option>
+                <option value="Regional">Regional (Provinsi)</option>
+                <option value="Nasional">Nasional</option>
+                <option value="Internasional">Internasional</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Waktu Pelaksanaan
+          </div>
+          <div class="callout">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span><strong>Info:</strong> Sistem otomatis menghitung <strong>jumlah hari</strong> dari tanggal mulai-selesai, dan <strong>jam per hari</strong> dari jam mulai-selesai.</span>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="eventDateStart" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Tanggal Mulai
+              </label>
+              <input type="date" id="eventDateStart">
+              <span class="error-message" id="eventDateStartError">Tanggal mulai wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="eventDateEnd" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Tanggal Selesai
+              </label>
+              <input type="date" id="eventDateEnd">
+              <span class="error-message" id="eventDateEndError">Tanggal selesai wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="eventStartTime" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Jam Mulai (WIB)
+              </label>
+              <input type="time" id="eventStartTime" value="19:00">
+              <span class="error-message" id="eventStartTimeError">Jam mulai wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="eventEndTime" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Jam Selesai (WIB)
+              </label>
+              <input type="time" id="eventEndTime" value="22:00">
+              <span class="error-message" id="eventEndTimeError">Jam selesai wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="hoursPerDay">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Jam per Hari
+                <span class="hint">otomatis</span>
+              </label>
+              <input type="text" id="hoursPerDay" readonly placeholder="0 jam" style="background:var(--bg);cursor:not-allowed;font-weight:600;color:var(--primary)">
+            </div>
+            <div class="form-group">
+              <label for="totalDays">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                Total Hari
+                <span class="hint">otomatis</span>
+              </label>
+              <input type="text" id="totalDays" readonly placeholder="0 hari" style="background:var(--bg);cursor:not-allowed;font-weight:600;color:var(--primary)">
+            </div>
+            <div class="form-group">
+              <label for="timezone">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Zona Waktu
+              </label>
+              <select id="timezone">
+                <option value="WIB">WIB (UTC+7)</option>
+                <option value="WITA">WITA (UTC+8)</option>
+                <option value="WIT">WIT (UTC+9)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="eventPlatform">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4"/></svg>
+                Platform Event
+              </label>
+              <select id="eventPlatform">
+                <option value="">-- Pilih Platform --</option>
+                <option value="Online (Discord)">Online (Discord)</option>
+                <option value="Online (Zoom)">Online (Zoom)</option>
+                <option value="Online (Google Meet)">Online (Google Meet)</option>
+                <option value="YouTube Live">YouTube Live</option>
+                <option value="TikTok Live">TikTok Live</option>
+                <option value="Facebook Live">Facebook Live</option>
+                <option value="Offline (Venue)">Offline (Venue)</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Peserta & Lokasi
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="participantCount" class="required">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Jumlah Peserta
+              </label>
+              <input type="number" id="participantCount" placeholder="Contoh: 100" min="1">
+              <span class="error-message" id="participantCountError">Jumlah peserta wajib diisi</span>
+            </div>
+            <div class="form-group">
+              <label for="teamCount">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Jumlah Tim/Slot
+              </label>
+              <input type="number" id="teamCount" placeholder="Contoh: 16" min="1">
+            </div>
+            <div class="form-group">
+              <label for="formatPertandingan">
+                <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Format Pertandingan
+              </label>
+              <select id="formatPertandingan">
+                <option value="">-- Pilih --</option>
+                <option value="Single Elimination">Single Elimination</option>
+                <option value="Double Elimination">Double Elimination</option>
+                <option value="Round Robin">Round Robin</option>
+                <option value="Swiss System">Swiss System</option>
+                <option value="Battle Royale Points">Battle Royale Points</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="locationName">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Nama Lokasi / Venue
+              </label>
+              <input type="text" id="locationName" placeholder="Kosongkan jika online">
+            </div>
+            <div class="form-group full">
+              <label for="locationAddress">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Alamat Lokasi
+              </label>
+              <input type="text" id="locationAddress" placeholder="Alamat lengkap venue (jika offline)">
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="prev2">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn btn-primary" id="next2">
+            Lanjutkan
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ STEP 3: GAME ============ -->
+      <div class="form-step" id="step3Form">
+        <div class="step-header">
+          <h2>
+            <svg class="icon" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="2"/></svg>
+            Kategori Game
+          </h2>
+          <p>Pilih game dan tentukan spesifikasi pertandingan</p>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/></svg>
+            Pilih Game
+          </div>
+          <div class="game-grid" id="gameCategories"></div>
+          <span class="error-message" id="gameError">Pilih salah satu kategori game</span>
+        </div>
+
+        <div class="form-section" id="gameSpecSection" style="display:none">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Spesifikasi Game
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="gameMode">Mode Permainan</label>
+              <select id="gameMode">
+                <option value="">-- Pilih Mode --</option>
+                <option value="Squad">Squad (4v4)</option>
+                <option value="Duo">Duo (2v2)</option>
+                <option value="Solo">Solo (1v1)</option>
+                <option value="Team Deathmatch">Team Deathmatch</option>
+                <option value="Battle Royale">Battle Royale</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="gamePlatform">Platform Bermain</label>
+              <select id="gamePlatform">
+                <option value="">-- Pilih Platform --</option>
+                <option value="Mobile">Mobile</option>
+                <option value="PC">PC</option>
+                <option value="Console">Console</option>
+                <option value="Cross-Platform">Cross-Platform</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="gameRegion">Region Server</label>
+              <select id="gameRegion">
+                <option value="">-- Pilih Region --</option>
+                <option value="SEA">Southeast Asia (SEA)</option>
+                <option value="Asia">Asia</option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Global">Global</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="matchFormat">Format Match</label>
+              <select id="matchFormat">
+                <option value="">-- Pilih Format --</option>
+                <option value="Bo1">Best of 1</option>
+                <option value="Bo3">Best of 3</option>
+                <option value="Bo5">Best of 5</option>
+                <option value="Bo7">Best of 7</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" id="broadcastSection" style="display:none">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Spesifikasi Broadcast
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="streamResolution">Resolusi Streaming</label>
+              <select id="streamResolution">
+                <option value="">-- Pilih --</option>
+                <option value="720p">720p HD</option>
+                <option value="1080p">1080p Full HD</option>
+                <option value="1440p">1440p QHD</option>
+                <option value="4K">4K Ultra HD</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="streamBitrate">Bitrate (Mbps)</label>
+              <select id="streamBitrate">
+                <option value="">-- Pilih --</option>
+                <option value="3000">3000 (Standar)</option>
+                <option value="4500">4500 (Rekomendasi)</option>
+                <option value="6000">6000 (Tinggi)</option>
+                <option value="8000">8000 (Premium)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="streamFps">Frame Rate</label>
+              <select id="streamFps">
+                <option value="">-- Pilih --</option>
+                <option value="30">30 FPS</option>
+                <option value="60">60 FPS</option>
+                <option value="120">120 FPS</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="overlayStyle">Gaya Overlay</label>
+              <select id="overlayStyle">
+                <option value="">-- Pilih --</option>
+                <option value="Minimalist">Minimalist</option>
+                <option value="Esports Pro">Esports Pro</option>
+                <option value="Futuristic">Futuristic</option>
+                <option value="Custom">Custom (request)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="overlayLanguage">Bahasa Overlay</label>
+              <select id="overlayLanguage">
+                <option value="Indonesia">Indonesia</option>
+                <option value="English">English</option>
+                <option value="Bilingual">Bilingual</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="casterGender">Preferensi Gender Caster</label>
+              <select id="casterGender">
+                <option value="Bebas">Bebas</option>
+                <option value="Pria">Pria</option>
+                <option value="Wanita">Wanita</option>
+                <option value="Duo (Pria+Wanita)">Duo (Pria + Wanita)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="casterLanguage">Bahasa Caster</label>
+              <select id="casterLanguage">
+                <option value="Indonesia">Bahasa Indonesia</option>
+                <option value="English">English</option>
+                <option value="Mixed">Mixed (ID + EN)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="casterCount">Jumlah Caster Diminta</label>
+              <input type="number" id="casterCount" placeholder="Contoh: 2" min="0" max="10" value="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="prev3">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn btn-primary" id="next3">
+            Lanjutkan
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ STEP 4: LAYANAN ============ -->
+      <div class="form-step" id="step4Form">
+        <div class="step-header">
+          <h2>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            Pilih Layanan
+          </h2>
+          <p>Pilih layanan utama dan tambahan sesuai kebutuhan event Anda</p>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2 15 9l7 .5-5.5 4.5L18 21l-6-3.5L6 21l1.5-7L2 9.5 9 9z"/></svg>
+            Layanan Utama
+          </div>
+          <div class="service-list" id="serviceOptions"></div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Layanan Tambahan
+          </div>
+          <div class="service-list" id="additionalServicesContainer"></div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            Request Khusus
+          </div>
+          <div class="form-group">
+            <label for="specialRequest">
+              Catatan / Permintaan Khusus
+              <span class="hint">opsional</span>
+            </label>
+            <textarea id="specialRequest" rows="3" placeholder="Contoh: Ingin overlay warna merah-hitam dengan logo komunitas di kiri atas, minta caster dengan gaya humoris, dll"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="referenceUrl">Link Referensi Visual (opsional)</label>
+            <input type="url" id="referenceUrl" placeholder="https://... (Google Drive / Pinterest / dll)">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="prev4">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn btn-primary" id="next4">
+            Lanjutkan
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ STEP 5: PEMBAYARAN ============ -->
+      <div class="form-step" id="step5Form">
+        <div class="step-header">
+          <h2>
+            <svg class="icon" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Metode Pembayaran
+          </h2>
+          <p>Pilih metode pembayaran dan lengkapi data pembayaran</p>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Pilih Metode
+          </div>
+          <div class="payment-grid" id="paymentMethods"></div>
+          <span class="error-message" id="paymentError">Pilih metode pembayaran</span>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Data Pembayaran
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="paymentName">Nama Pemilik Rekening / Akun</label>
+              <input type="text" id="paymentName" placeholder="Sesuai nama di rekening/e-wallet">
+            </div>
+            <div class="form-group">
+              <label for="paymentType">Jenis Pembayaran</label>
+              <select id="paymentType">
+                <option value="Full Payment">Full Payment (100%)</option>
+                <option value="DP 50%">DP 50%</option>
+                <option value="DP 30%">DP 30%</option>
+                <option value="Termin">Termin (cicilan)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="paymentDate">Rencana Tanggal Pembayaran</label>
+              <input type="date" id="paymentDate">
+            </div>
+            <div class="form-group">
+              <label for="invoiceRef">Referensi Invoice / Catatan</label>
+              <input type="text" id="invoiceRef" placeholder="Contoh: INV-2025-001">
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="prev5">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn btn-primary" id="next5">
+            Lanjutkan
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ STEP 6: S&K ============ -->
+      <div class="form-step" id="step6Form">
+        <div class="step-header">
+          <h2>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Syarat & Ketentuan
+          </h2>
+          <p>Baca dengan teliti sebelum menyetujui dan mengirim pengajuan</p>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Ketentuan Layanan
+          </div>
+          <div class="terms-box" id="termsContainer">
+            <h3>
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Syarat dan Ketentuan Pengajuan Jasa EO
+            </h3>
+            <ol>
+              <li>Pembayaran dapat dilakukan melalui semua E-Wallet dan QRIS yang tersedia.</li>
+              <li>Proses pengerjaan selama 7 hari kerja sesuai antrian (jika ada).</li>
+              <li>Harga yang tertera tidak dapat dinegosiasi.</li>
+              <li>Revisi hanya diperbolehkan sebanyak 5 kali.</li>
+              <li>Khusus desain, file akan dikirim dalam bentuk dokumen, PNG, atau ZIP.</li>
+              <li>Untuk livestreaming, bisa request akun di beberapa platform customer. Jika tidak request, akan dialihkan ke channel khusus SABADA Organizer.</li>
+              <li>Ada sistem garansi: jika terjadi kesalahan teknis, human error, atau dari pihak admin, uang akan dikembalikan 100%.</li>
+              <li>Admin memiliki hak untuk memposting hasil orderan dengan watermark apabila diperlukan untuk kebutuhan sample dan portofolio.</li>
+              <li>Lama pengerjaan design serta overlay 1–7 hari tergantung tingkat kesulitan, kondisi, dan antrian.</li>
+              <li>Antrian bisa dipercepat, namun harus ada biaya tambahan.</li>
+              <li>Setiap setelah order disepakati dari pihak pembeli, pembeli wajib memberikan bukti pembayaran terlebih dahulu. Sebagai gantinya, admin akan memberikan garansi 100% uang kembali jika terjadi kesalahan (khusus event order dan lainnya).</li>
+              <li>Data pribadi yang diberikan hanya digunakan untuk keperluan administrasi event dan tidak akan disebarluaskan ke pihak ketiga.</li>
+              <li>Pembatalan setelah pembayaran DP akan dikenakan biaya administrasi 25% dari total DP.</li>
+            </ol>
+          </div>
+          <div class="terms-agree">
+            <input type="checkbox" id="agreeTerms">
+            <label for="agreeTerms">Saya telah membaca, memahami, dan menyetujui seluruh Syarat & Ketentuan yang berlaku. Data yang saya isi adalah benar dan dapat dipertanggungjawabkan.</label>
+          </div>
+          <span class="error-message" id="termsError">Anda harus menyetujui syarat dan ketentuan</span>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Konfirmasi Pengiriman
+          </div>
+          <div class="form-group">
+            <label for="signature">Tanda Tangan Digital (ketik nama lengkap Anda)</label>
+            <input type="text" id="signature" placeholder="Ketik ulang nama lengkap sebagai tanda persetujuan">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="prev6">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn btn-primary" id="submitForm">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Kirim Pengajuan
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // ==================== DATA ====================
-        const formData = {
-            games: [
-                { id: 'bloodstrike', name: 'Bloodstrike', icon: 'https://imageshack.com/i/pnXLW6Psj' }
-            ],
-            services: {
-                'bloodstrike': [
-                    { id: 'operator-live', name: 'Operator Live', price: 20000, description: 'Terhitung harga × jumlah hari', type: 'checkbox', isDaily: true },
-                    { id: 'caster-biasa', name: 'Caster Biasa', price: 50000, description: 'Terhitung harga × jumlah hari', type: 'checkbox', isDaily: true },
-                    { id: 'caster-pro', name: 'Caster Pro', price: 100000, description: 'Terhitung harga × jumlah hari', type: 'checkbox', isDaily: true }
-                ]
-            },
-            additionalServices: {
-                'bloodstrike': [
-                    { id: 'bs1', name: 'Formulir Pendaftaran Online', price: 1000, description: 'Formulir digital untuk pendaftaran peserta', type: 'checkbox' },
-                    { id: 'bs2', name: 'Data Sheet Peserta Terorganisir', price: 5000, description: 'Data peserta dalam format rapi dan siap pakai', type: 'checkbox' },
-                    { id: 'bs3', name: 'Rekap Point Peserta Tournament', price: 10000, description: 'File rekap nilai/point peserta selama turnamen', type: 'checkbox' },
-                    { id: 'bs4', name: 'Design Live Streaming', price: 50000, description: 'Opening, break, in game dll', type: 'checkbox' },
-                    { id: 'bs12', name: 'Tim Teknis Event/Support', price: 20000, description: 'Dukungan teknis selama acara berlangsung', type: 'checkbox' }
-                ]
-            },
-            paymentMethods: [
-                { id: 'dana', name: 'Dana', icon: 'https://imageshack.com/i/pnhYg0lZp' },
-                { id: 'ovo', name: 'OVO', icon: 'https://imageshack.com/i/pmA1J5ZRp' },
-                { id: 'gopay', name: 'GoPay', icon: 'https://imageshack.com/i/pnEGxKwap' },
-                { id: 'qris', name: 'QRIS', icon: 'https://imageshack.com/i/poyHB7nGp' }
-            ]
-        };
+  <!-- SUMMARY SIDEBAR -->
+  <aside class="summary">
+    <div class="summary-head">
+      <h3>
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Ringkasan Pesanan
+      </h3>
+      <button class="fab" id="copySummaryBtn" style="width:32px;height:32px;background:rgba(255,255,255,.2);border:none;color:#fff" title="Salin ringkasan">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+    </div>
+    <div class="summary-body">
+      <div class="summary-section">
+        <div class="summary-section-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Pemesan
+        </div>
+        <div class="summary-row"><span class="k">Nama</span><span class="v" id="s_fullName">-</span></div>
+        <div class="summary-row"><span class="k">Komunitas</span><span class="v" id="s_community">-</span></div>
+        <div class="summary-row"><span class="k">WhatsApp</span><span class="v" id="s_wa">-</span></div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-section-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+          Event
+        </div>
+        <div class="summary-row"><span class="k">Nama</span><span class="v" id="s_eventName">-</span></div>
+        <div class="summary-row"><span class="k">Game</span><span class="v" id="s_game">-</span></div>
+        <div class="summary-row"><span class="k">Tanggal</span><span class="v" id="s_date">-</span></div>
+        <div class="summary-row"><span class="k">Total Hari</span><span class="v" id="s_days">-</span></div>
+        <div class="summary-row"><span class="k">Jam/Hari</span><span class="v" id="s_hours">-</span></div>
+        <div class="summary-row"><span class="k">Total Jam</span><span class="v" id="s_totalHours">-</span></div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-section-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2 15 9l7 .5-5.5 4.5L18 21l-6-3.5L6 21l1.5-7L2 9.5 9 9z"/></svg>
+          Layanan
+        </div>
+        <div class="summary-list" id="summaryServices">
+          <div class="empty">Belum ada layanan dipilih</div>
+        </div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-section-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Pembayaran
+        </div>
+        <div class="summary-row"><span class="k">Metode</span><span class="v" id="s_payment">-</span></div>
+        <div class="summary-row"><span class="k">Jenis</span><span class="v" id="s_paymentType">-</span></div>
+      </div>
+    </div>
+    <div class="summary-total">
+      <span class="label">TOTAL</span>
+      <span class="amount empty" id="summaryTotal">Rp 0</span>
+    </div>
+  </aside>
+</div>
 
-        // ==================== STATE ====================
-        let currentStep = 1;
-        const totalSteps = 6;
-        let selectedGame = null;
-        let selectedPaymentMethod = null;
-        let eventDuration = 1;
+<script>
+/* ============================================================
+   ICON TEMPLATES
+============================================================ */
+const ICON = {
+  success: '<svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+  error: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  warning: '<svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  info: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+};
 
-        // ==================== UTILITIES ====================
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            const icons = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
-            toast.innerHTML = `
-                <div class="toast-icon">${icons[type] || icons.info}</div>
-                <div class="toast-message">${message}</div>
-            `;
-            
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'slideOutRight 0.3s ease forwards';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+/* ============================================================
+   DATA
+============================================================ */
+const formData = {
+  games: [
+    { id: 'bloodstrike', name: 'Bloodstrike', icon: 'https://imageshack.com/i/pnXLW6Psj' }
+  ],
+  services: {
+    'bloodstrike': [
+      { id: 'operator-live', name: 'Operator Live', price: 20000, description: 'Terhitung harga × jumlah hari × qty', isDaily: true },
+      { id: 'caster-biasa', name: 'Caster Biasa', price: 50000, description: 'Terhitung harga × jumlah hari × qty', isDaily: true },
+      { id: 'caster-pro', name: 'Caster Pro', price: 100000, description: 'Terhitung harga × jumlah hari × qty', isDaily: true }
+    ]
+  },
+  additionalServices: {
+    'bloodstrike': [
+      { id: 'bs1', name: 'Formulir Pendaftaran Online', price: 1000, description: 'Formulir digital pendaftaran peserta', isDaily: false },
+      { id: 'bs2', name: 'Data Sheet Peserta Terorganisir', price: 5000, description: 'Data peserta format rapi & siap pakai', isDaily: false },
+      { id: 'bs3', name: 'Rekap Point Peserta Tournament', price: 10000, description: 'File rekap nilai/point peserta', isDaily: false },
+      { id: 'bs4', name: 'Design Live Streaming', price: 50000, description: 'Opening, break, in-game, dll', isDaily: false },
+      { id: 'bs12', name: 'Tim Teknis Event / Support', price: 20000, description: 'Dukungan teknis selama acara', isDaily: false }
+    ]
+  },
+  paymentMethods: [
+    { id: 'dana', name: 'Dana', icon: 'https://imageshack.com/i/pnhYg0lZp' },
+    { id: 'ovo', name: 'OVO', icon: 'https://imageshack.com/i/pmA1J5ZRp' },
+    { id: 'gopay', name: 'GoPay', icon: 'https://imageshack.com/i/pnEGxKwap' },
+    { id: 'qris', name: 'QRIS', icon: 'https://imageshack.com/i/poyHB7nGp' }
+  ],
+  provinces: ['Aceh','Bali','Banten','Bengkulu','DI Yogyakarta','DKI Jakarta','Gorontalo','Jambi','Jawa Barat','Jawa Tengah','Jawa Timur','Kalimantan Barat','Kalimantan Selatan','Kalimantan Tengah','Kalimantan Timur','Kalimantan Utara','Kepulauan Bangka Belitung','Kepulauan Riau','Lampung','Maluku','Maluku Utara','Nusa Tenggara Barat','Nusa Tenggara Timur','Papua','Papua Barat','Papua Barat Daya','Papua Pegunungan','Papua Selatan','Papua Tengah','Riau','Sulawesi Barat','Sulawesi Selatan','Sulawesi Tengah','Sulawesi Tenggara','Sulawesi Utara','Sumatera Barat','Sumatera Selatan','Sumatera Utara']
+};
 
-        function formatRupiah(amount) {
-            return 'Rp ' + amount.toLocaleString('id-ID');
-        }
+/* ============================================================
+   STATE
+============================================================ */
+let currentStep = 1;
+const totalSteps = 6;
+let selectedGame = null;
+let selectedPayment = null;
+let eventDurationDays = 1;
+let hoursPerDay = 0;
+let serviceQuantities = {}; // { serviceId: qty }
+const stepNames = ['Data Diri','Detail Event','Pilih Game','Pilih Layanan','Pembayaran','Selesai'];
 
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr + 'T00:00:00');
-            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-        }
+/* ============================================================
+   UTILITIES
+============================================================ */
+function showToast(msg, type='info'){
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = (ICON[type]||ICON.info) + '<span>' + msg + '</span>';
+  c.appendChild(t);
+  setTimeout(()=>{ t.style.animation='toastOut .3s ease forwards'; setTimeout(()=>t.remove(),300); }, 3200);
+}
+function formatRp(n){ return 'Rp ' + (n||0).toLocaleString('id-ID'); }
+function formatDate(d){
+  if(!d) return '-';
+  try {
+    return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+  } catch(e){ return d; }
+}
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-        // ==================== THEME ====================
-        const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        if (savedTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            themeToggle.textContent = '☀️';
-        }
+/* ============================================================
+   THEME
+============================================================ */
+const themeToggle = document.getElementById('themeToggle');
+if(localStorage.getItem('theme')==='dark'){
+  document.documentElement.setAttribute('data-theme','dark');
+  themeToggle.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+}
+themeToggle.addEventListener('click', ()=>{
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  themeToggle.innerHTML = next==='dark'
+    ? '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>'
+    : '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+});
 
-        themeToggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            const newTheme = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            localStorage.setItem('theme', newTheme);
-        });
+/* ============================================================
+   INIT
+============================================================ */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Province options
+  const provSel = document.getElementById('province');
+  formData.provinces.forEach(p=>{
+    const o = document.createElement('option'); o.value=p; o.textContent=p; provSel.appendChild(o);
+  });
 
-        // ==================== INITIALIZATION ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fill duration dropdown
-            const durationSelect = document.getElementById('eventDuration');
-            for (let i = 1; i <= 30; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = `${i} hari`;
-                durationSelect.appendChild(option);
-            }
+  // Min date today
+  const today = new Date();
+  const iso = today.toISOString().split('T')[0];
+  document.getElementById('eventDateStart').min = iso;
+  document.getElementById('eventDateEnd').min = iso;
+  document.getElementById('paymentDate').min = iso;
+  document.getElementById('birthDate').max = iso;
 
-            // Set minimum date
-            const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const yyyy = today.getFullYear();
-            document.getElementById('eventDate').min = `${yyyy}-${mm}-${dd}`;
+  // Render game cards
+  const gCont = document.getElementById('gameCategories');
+  formData.games.forEach(g=>{
+    const card = document.createElement('div');
+    card.className='game-card'; card.dataset.id=g.id;
+    card.innerHTML = '<img class="game-icon" src="'+g.icon+'" alt="'+g.name+'" onerror="this.style.display=\'none\'"><div class="game-name">'+g.name+'</div>';
+    card.addEventListener('click',()=>selectGame(g.id));
+    gCont.appendChild(card);
+  });
 
-            // Render games
-            const gameContainer = document.getElementById('gameCategories');
-            formData.games.forEach(game => {
-                const gameCard = document.createElement('div');
-                gameCard.className = 'game-card';
-                gameCard.dataset.id = game.id;
-                gameCard.innerHTML = `
-                    <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://via.placeholder.com/60/4a6bff/ffffff?text=${game.name[0]}'">
-                    <div class="game-name">${game.name}</div>
-                `;
-                gameCard.addEventListener('click', () => selectGame(game.id));
-                gameContainer.appendChild(gameCard);
-            });
+  // Render payment methods
+  const pCont = document.getElementById('paymentMethods');
+  formData.paymentMethods.forEach(m=>{
+    const c = document.createElement('div');
+    c.className='payment-card'; c.dataset.id=m.id;
+    c.innerHTML = '<img src="'+m.icon+'" alt="'+m.name+'" onerror="this.style.display=\'none\'"><div class="pay-name">'+m.name+'</div>';
+    c.addEventListener('click',()=>selectPayment(m.id));
+    pCont.appendChild(c);
+  });
 
-            // Render payment methods
-            const paymentContainer = document.getElementById('paymentMethods');
-            formData.paymentMethods.forEach(method => {
-                const paymentCard = document.createElement('div');
-                paymentCard.className = 'payment-method';
-                paymentCard.dataset.id = method.id;
-                paymentCard.innerHTML = `
-                    <img src="${method.icon}" alt="${method.name}" onerror="this.src='https://via.placeholder.com/45/4a6bff/ffffff?text=${method.name[0]}'">
-                    <div class="payment-name">${method.name}</div>
-                `;
-                paymentCard.addEventListener('click', () => selectPaymentMethod(method.id));
-                paymentContainer.appendChild(paymentCard);
-            });
+  // Auto-calc fields
+  ['eventDateStart','eventDateEnd'].forEach(id=>{
+    document.getElementById(id).addEventListener('change', computeEventDuration);
+  });
+  ['eventStartTime','eventEndTime'].forEach(id=>{
+    document.getElementById(id).addEventListener('change', computeHoursPerDay);
+  });
 
-            setupNavigation();
-            setupLiveSummary();
-            setupWhatsAppFormatting();
-            updateProgress();
-        });
+  // Live summary bindings
+  const liveBindings = {
+    fullName:'s_fullName', communityName:'s_community', whatsappNumber:'s_wa',
+    eventName:'s_eventName', eventDateStart:'s_date'
+  };
+  Object.entries(liveBindings).forEach(([i,s])=>{
+    const el = document.getElementById(i);
+    el.addEventListener('input', ()=>updateSummary());
+    el.addEventListener('change', ()=>updateSummary());
+  });
+  document.getElementById('paymentType').addEventListener('change', updateSummary);
 
-        // ==================== LIVE SUMMARY ====================
-        function setupLiveSummary() {
-            const fields = {
-                fullName: 'summaryName',
-                communityName: 'summaryCommunity',
-                eventDate: 'summaryDate',
-                eventDuration: 'summaryDuration'
-            };
+  // Nav
+  document.getElementById('next1').addEventListener('click', validateStep1);
+  document.getElementById('next2').addEventListener('click', validateStep2);
+  document.getElementById('next3').addEventListener('click', validateStep3);
+  document.getElementById('next4').addEventListener('click', validateStep4);
+  document.getElementById('next5').addEventListener('click', validateStep5);
+  document.getElementById('submitForm').addEventListener('click', validateStep6);
+  document.getElementById('prev2').addEventListener('click', ()=>goToStep(1));
+  document.getElementById('prev3').addEventListener('click', ()=>goToStep(2));
+  document.getElementById('prev4').addEventListener('click', ()=>goToStep(3));
+  document.getElementById('prev5').addEventListener('click', ()=>goToStep(4));
+  document.getElementById('prev6').addEventListener('click', ()=>goToStep(5));
 
-            Object.entries(fields).forEach(([inputId, summaryId]) => {
-                const input = document.getElementById(inputId);
-                input.addEventListener('input', () => {
-                    const el = document.getElementById(summaryId);
-                    if (inputId === 'eventDate') {
-                        el.textContent = formatDate(input.value);
-                    } else if (inputId === 'eventDuration') {
-                        el.textContent = input.value ? input.value + ' hari' : '-';
-                    } else {
-                        el.textContent = input.value || '-';
-                    }
-                });
-                input.addEventListener('change', () => {
-                    const el = document.getElementById(summaryId);
-                    if (inputId === 'eventDate') {
-                        el.textContent = formatDate(input.value);
-                    } else if (inputId === 'eventDuration') {
-                        el.textContent = input.value ? input.value + ' hari' : '-';
-                    } else {
-                        el.textContent = input.value || '-';
-                    }
-                });
-            });
-        }
+  // Save draft
+  document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
+  document.getElementById('copySummaryBtn').addEventListener('click', copySummary);
 
-        function setupWhatsAppFormatting() {
-            const waInput = document.getElementById('whatsappNumber');
-            waInput.addEventListener('input', (e) => {
-                e.target.value = e.target.value.replace(/[^0-9]/g, '');
-            });
-        }
+  // Draft detection
+  if(localStorage.getItem('sabada_draft')){
+    const d = JSON.parse(localStorage.getItem('sabada_draft'));
+    document.getElementById('draftBanner').style.display='flex';
+    document.getElementById('draftText').textContent = 'Draft tersimpan: ' + (d.savedAt || 'baru saja');
+  }
 
-        // ==================== NAVIGATION ====================
-        function setupNavigation() {
-            document.getElementById('next1').addEventListener('click', validateStep1);
-            document.getElementById('next2').addEventListener('click', validateStep2);
-            document.getElementById('next3').addEventListener('click', validateStep3);
-            document.getElementById('next4').addEventListener('click', validateStep4);
-            document.getElementById('next5').addEventListener('click', validateStep5);
-            document.getElementById('submitForm').addEventListener('click', validateStep6);
+  updateProgress();
+  updateSummary();
+});
 
-            document.getElementById('prev2').addEventListener('click', () => goToStep(1));
-            document.getElementById('prev3').addEventListener('click', () => goToStep(2));
-            document.getElementById('prev4').addEventListener('click', () => goToStep(3));
-            document.getElementById('prev5').addEventListener('click', () => goToStep(4));
-            document.getElementById('prev6').addEventListener('click', () => goToStep(5));
+/* ============================================================
+   AUTO CALCULATIONS
+============================================================ */
+function computeEventDuration(){
+  const s = document.getElementById('eventDateStart').value;
+  const e = document.getElementById('eventDateEnd').value;
+  if(!s || !e){ 
+    document.getElementById('totalDays').value='';
+    eventDurationDays = 1; return;
+  }
+  const sd = new Date(s), ed = new Date(e);
+  if(ed < sd){
+    showToast('Tanggal selesai tidak boleh sebelum tanggal mulai','error');
+    document.getElementById('eventDateEnd').classList.add('input-error');
+    return;
+  }
+  document.getElementById('eventDateEnd').classList.remove('input-error');
+  const diff = Math.round((ed - sd)/(1000*60*60*24)) + 1;
+  document.getElementById('totalDays').value = diff + ' hari';
+  eventDurationDays = diff;
+  updateSummary();
+  updateServicePrices();
+}
 
-            // Enter key navigation
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && currentStep < totalSteps) {
-                    const activeForm = document.querySelector('.form-step.active');
-                    if (activeForm && !e.target.matches('textarea')) {
-                        e.preventDefault();
-                        const nextBtn = activeForm.querySelector('.btn-primary');
-                        if (nextBtn) nextBtn.click();
-                    }
-                }
-            });
-        }
+function computeHoursPerDay(){
+  const s = document.getElementById('eventStartTime').value;
+  const e = document.getElementById('eventEndTime').value;
+  if(!s || !e){ document.getElementById('hoursPerDay').value=''; hoursPerDay = 0; return; }
+  const [sh,sm] = s.split(':').map(Number);
+  const [eh,em] = e.split(':').map(Number);
+  let startMin = sh*60+sm, endMin = eh*60+em;
+  if(endMin <= startMin) endMin += 24*60; // lintas tengah malam
+  const total = (endMin - startMin)/60;
+  hoursPerDay = total;
+  document.getElementById('hoursPerDay').value = total.toFixed(1).replace('.0','') + ' jam';
+  updateSummary();
+}
 
-        function goToStep(step) {
-            document.getElementById(`step${currentStep}Form`).classList.remove('active');
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-            
-            currentStep = step;
-            document.getElementById(`step${currentStep}Form`).classList.add('active');
-            document.getElementById(`step${currentStep}`).classList.add('active');
-            
-            updateProgress();
-            document.querySelector('.container').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+/* ============================================================
+   STEP NAVIGATION
+============================================================ */
+function goToStep(step){
+  document.getElementById('step'+currentStep+'Form').classList.remove('active');
+  document.querySelectorAll('.step-node').forEach(n=>n.classList.remove('active'));
+  currentStep = step;
+  document.getElementById('step'+currentStep+'Form').classList.add('active');
+  document.querySelectorAll('.step-node').forEach(n=>{
+    const ns = parseInt(n.dataset.step);
+    n.classList.remove('active','completed');
+    if(ns < currentStep) n.classList.add('completed');
+    else if(ns === currentStep) n.classList.add('active');
+  });
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goNext(){ if(currentStep<totalSteps) goToStep(currentStep+1); }
 
-        function goToNextStep() {
-            if (currentStep < totalSteps) goToStep(currentStep + 1);
-        }
+function updateProgress(){
+  const pct = ((currentStep-1)/(totalSteps-1))*100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = 'Tahap ' + currentStep + ' dari ' + totalSteps;
+  document.getElementById('progressName').textContent = stepNames[currentStep-1];
+}
 
-        function updateProgress() {
-            const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
-            document.getElementById('stepLineProgress').style.width = `calc(${progressPercentage}% - 20px)`;
-            
-            for (let i = 1; i <= totalSteps; i++) {
-                const stepElement = document.getElementById(`step${i}`);
-                stepElement.classList.remove('active', 'completed');
-                if (i < currentStep) stepElement.classList.add('completed');
-                else if (i === currentStep) stepElement.classList.add('active');
-            }
-        }
+/* ============================================================
+   VALIDATION HELPERS
+============================================================ */
+function setErr(inputId, errId, show){
+  const i = document.getElementById(inputId), e = document.getElementById(errId);
+  if(!i||!e) return;
+  if(show){ i.classList.add('input-error'); i.classList.remove('valid'); e.classList.add('show'); }
+  else{ i.classList.remove('input-error'); if(i.value) i.classList.add('valid'); e.classList.remove('show'); }
+}
+function reqVal(id){ return (document.getElementById(id)?.value || '').trim(); }
 
-        // ==================== VALIDATION ====================
-        function setError(inputId, errorId, show) {
-            const input = document.getElementById(inputId);
-            const error = document.getElementById(errorId);
-            if (show) {
-                input.classList.add('input-error');
-                error.classList.add('show');
-            } else {
-                input.classList.remove('input-error');
-                error.classList.remove('show');
-            }
-        }
+/* ============================================================
+   STEP VALIDATIONS
+============================================================ */
+function validateStep1(){
+  let ok = true;
+  const fullName = reqVal('fullName');
+  setErr('fullName','fullNameError', fullName.length < 3);
+  if(fullName.length < 3) ok=false;
 
-        function validateStep1() {
-            let isValid = true;
-            const fullName = document.getElementById('fullName').value.trim();
-            const communityName = document.getElementById('communityName').value.trim();
-            const waNumber = document.getElementById('whatsappNumber').value.trim();
+  const email = reqVal('email');
+  const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  setErr('email','emailError', !emailRx.test(email));
+  if(!emailRx.test(email)) ok=false;
 
-            setError('fullName', 'fullNameError', !fullName);
-            if (!fullName) isValid = false;
+  const wa = reqVal('whatsappNumber');
+  const waRx = /^[0-9]{10,15}$/;
+  setErr('whatsappNumber','whatsappError', !waRx.test(wa));
+  if(!waRx.test(wa)) ok=false;
 
-            setError('communityName', 'communityNameError', !communityName);
-            if (!communityName) isValid = false;
+  const addr = reqVal('address');
+  setErr('address','addressError', !addr);
+  if(!addr) ok=false;
 
-            const waRegex = /^[0-9]{10,15}$/;
-            const waValid = waRegex.test(waNumber);
-            setError('whatsappNumber', 'whatsappError', !waValid);
-            if (!waValid) isValid = false;
+  const city = reqVal('city');
+  setErr('city','cityError', !city);
+  if(!city) ok=false;
 
-            if (isValid) {
-                showToast('Data diri tersimpan', 'success');
-                goToNextStep();
-            } else {
-                showToast('Mohon lengkapi data dengan benar', 'error');
-            }
-        }
+  const prov = reqVal('province');
+  setErr('province','provinceError', !prov);
+  if(!prov) ok=false;
 
-        function validateStep2() {
-            let isValid = true;
-            const duration = document.getElementById('eventDuration').value;
-            const date = document.getElementById('eventDate').value;
+  const comm = reqVal('communityName');
+  setErr('communityName','communityNameError', !comm);
+  if(!comm) ok=false;
 
-            setError('eventDuration', 'durationError', !duration);
-            if (!duration) isValid = false;
+  // NIK check if provided
+  const nik = reqVal('nik');
+  if(nik && !/^[0-9]{16}$/.test(nik)){
+    document.getElementById('nik').classList.add('input-error');
+    showToast('NIK harus 16 digit angka','error');
+    ok=false;
+  } else {
+    document.getElementById('nik').classList.remove('input-error');
+  }
 
-            setError('eventDate', 'dateError', !date);
-            if (!date) isValid = false;
+  if(ok){ showToast('Data diri tersimpan','success'); goNext(); }
+  else showToast('Periksa kembali data yang wajib diisi','error');
+}
 
-            if (isValid) {
-                eventDuration = parseInt(duration);
-                showToast('Detail event tersimpan', 'success');
-                goToNextStep();
-            } else {
-                showToast('Mohon lengkapi detail event', 'error');
-            }
-        }
+function validateStep2(){
+  let ok = true;
 
-        function validateStep3() {
-            if (!selectedGame) {
-                document.getElementById('gameError').classList.add('show');
-                showToast('Pilih kategori game terlebih dahulu', 'error');
-                return;
-            }
-            document.getElementById('gameError').classList.remove('show');
-            showToast('Game dipilih: ' + formData.games.find(g => g.id === selectedGame).name, 'success');
-            goToNextStep();
-        }
+  setErr('eventName','eventNameError', !reqVal('eventName')); if(!reqVal('eventName')) ok=false;
+  setErr('eventType','eventTypeError', !reqVal('eventType')); if(!reqVal('eventType')) ok=false;
+  setErr('eventDateStart','eventDateStartError', !reqVal('eventDateStart')); if(!reqVal('eventDateStart')) ok=false;
+  setErr('eventDateEnd','eventDateEndError', !reqVal('eventDateEnd')); if(!reqVal('eventDateEnd')) ok=false;
+  setErr('eventStartTime','eventStartTimeError', !reqVal('eventStartTime')); if(!reqVal('eventStartTime')) ok=false;
+  setErr('eventEndTime','eventEndTimeError', !reqVal('eventEndTime')); if(!reqVal('eventEndTime')) ok=false;
+  setErr('participantCount','participantCountError', !reqVal('participantCount')); if(!reqVal('participantCount')) ok=false;
 
-        function validateStep4() {
-            const hasServices = document.querySelectorAll(
-                '#serviceOptions input[type="checkbox"]:checked, #additionalServicesContainer input[type="checkbox"]:checked'
-            ).length > 0;
+  const s = reqVal('eventDateStart'), e = reqVal('eventDateEnd');
+  if(s && e && new Date(e) < new Date(s)){
+    showToast('Tanggal selesai tidak boleh sebelum tanggal mulai','error');
+    ok = false;
+  }
+  if(!hoursPerDay){
+    showToast('Jam selesai harus setelah jam mulai','error');
+    ok = false;
+  }
 
-            if (!hasServices) {
-                showToast('Pilih minimal satu layanan', 'error');
-                return;
-            }
-            showToast('Layanan tersimpan', 'success');
-            goToNextStep();
-        }
+  if(ok){ computeEventDuration(); showToast('Detail event tersimpan','success'); goNext(); }
+  else showToast('Lengkapi detail event dengan benar','error');
+}
 
-        function validateStep5() {
-            if (!selectedPaymentMethod) {
-                document.getElementById('paymentError').classList.add('show');
-                showToast('Pilih metode pembayaran', 'error');
-                return;
-            }
-            document.getElementById('paymentError').classList.remove('show');
-            showToast('Metode pembayaran dipilih', 'success');
-            goToNextStep();
-        }
+function validateStep3(){
+  if(!selectedGame){
+    document.getElementById('gameError').classList.add('show');
+    showToast('Pilih kategori game terlebih dahulu','error'); return;
+  }
+  document.getElementById('gameError').classList.remove('show');
+  showToast('Game dipilih','success');
+  goNext();
+}
 
-        function validateStep6() {
-            const agree = document.getElementById('agreeTerms').checked;
-            if (!agree) {
-                document.getElementById('termsError').classList.add('show');
-                showToast('Anda harus menyetujui S&K', 'error');
-                return;
-            }
-            document.getElementById('termsError').classList.remove('show');
-            
-            const submitBtn = document.getElementById('submitForm');
-            submitBtn.classList.add('loading');
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                submitForm();
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-            }, 800);
-        }
+function validateStep4(){
+  const checked = document.querySelectorAll('#serviceOptions input[type=checkbox]:checked, #additionalServicesContainer input[type=checkbox]:checked');
+  if(!checked.length){ showToast('Pilih minimal satu layanan','error'); return; }
+  showToast('Layanan tersimpan','success');
+  goNext();
+}
 
-        // ==================== GAME & SERVICES ====================
-        function selectGame(gameId) {
-            selectedGame = gameId;
-            
-            document.querySelectorAll('.game-card').forEach(card => {
-                card.classList.toggle('selected', card.dataset.id === gameId);
-            });
-            
-            populateServices(gameId);
-            populateAdditionalServices(gameId);
-            updateSummaryGame();
-            
-            document.getElementById('gameError').classList.remove('show');
-            showToast(`${formData.games.find(g => g.id === gameId).name} dipilih`, 'success');
-        }
+function validateStep5(){
+  if(!selectedPayment){
+    document.getElementById('paymentError').classList.add('show');
+    showToast('Pilih metode pembayaran','error'); return;
+  }
+  document.getElementById('paymentError').classList.remove('show');
+  showToast('Metode pembayaran dipilih','success');
+  goNext();
+}
 
-        function populateServices(gameId) {
-            const services = formData.services[gameId] || [];
-            const container = document.getElementById('serviceOptions');
-            container.innerHTML = '';
+function validateStep6(){
+  const agree = document.getElementById('agreeTerms').checked;
+  if(!agree){
+    document.getElementById('termsError').classList.add('show');
+    showToast('Anda harus menyetujui S&K','error'); return;
+  }
+  document.getElementById('termsError').classList.remove('show');
 
-            if (services.length === 0) {
-                container.innerHTML = '<p style="color:var(--light-text);font-size:0.85rem;">Belum ada layanan untuk game ini.</p>';
-                return;
-            }
+  const sig = reqVal('signature');
+  const name = reqVal('fullName');
+  if(!sig || sig.toLowerCase() !== name.toLowerCase()){
+    showToast('Tanda tangan harus sama dengan nama lengkap','error');
+    document.getElementById('signature').classList.add('input-error');
+    return;
+  }
+  document.getElementById('signature').classList.remove('input-error');
 
-            services.forEach(service => {
-                const item = document.createElement('div');
-                item.className = 'service-item';
-                item.innerHTML = `
-                    <input type="checkbox" id="service-${service.id}" data-price="${service.price}" data-daily="${service.isDaily ? 'true' : 'false'}">
-                    <label for="service-${service.id}">
-                        <strong>${service.name}</strong>
-                        <span class="service-desc">${service.description}</span>
-                    </label>
-                    <span class="service-price">${formatRupiah(service.price)}${service.isDaily ? '/hari' : ''}</span>
-                `;
-                const checkbox = item.querySelector('input');
-                checkbox.addEventListener('change', () => {
-                    updateSummaryServices();
-                    item.style.borderColor = checkbox.checked ? 'var(--primary-color)' : 'var(--border-color)';
-                    item.style.background = checkbox.checked ? 'var(--primary-light)' : 'var(--card-bg)';
-                });
-                container.appendChild(item);
-            });
-        }
+  const btn = document.getElementById('submitForm');
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(()=>{ submitForm(); btn.classList.remove('loading'); btn.disabled=false; }, 700);
+}
 
-        function populateAdditionalServices(gameId) {
-            const services = formData.additionalServices[gameId] || [];
-            const container = document.getElementById('additionalServicesContainer');
-            container.innerHTML = '';
+/* ============================================================
+   GAME & SERVICES
+============================================================ */
+function selectGame(id){
+  selectedGame = id;
+  document.querySelectorAll('.game-card').forEach(c=>c.classList.toggle('selected', c.dataset.id===id));
+  document.getElementById('gameError').classList.remove('show');
+  document.getElementById('gameSpecSection').style.display = 'block';
+  document.getElementById('broadcastSection').style.display = 'block';
+  populateServices(id);
+  populateAdditional(id);
+  updateSummary();
+  showToast('Game dipilih: ' + formData.games.find(g=>g.id===id).name, 'success');
+}
 
-            if (services.length === 0) {
-                container.innerHTML = '<p style="color:var(--light-text);font-size:0.85rem;">Belum ada layanan tambahan untuk game ini.</p>';
-                return;
-            }
+function populateServices(gameId){
+  const list = formData.services[gameId] || [];
+  const cont = document.getElementById('serviceOptions');
+  cont.innerHTML = '';
+  if(!list.length){ cont.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">Belum ada layanan untuk game ini.</p>'; return; }
+  list.forEach(s=>{
+    const item = document.createElement('div');
+    item.className = 'service-item';
+    item.innerHTML = `
+      <input type="checkbox" id="chk-${s.id}" data-id="${s.id}" data-price="${s.price}" data-daily="${s.isDaily}" data-name="${escapeHtml(s.name)}">
+      <div class="service-info">
+        <strong>${escapeHtml(s.name)}</strong>
+        <span>${escapeHtml(s.description)}</span>
+      </div>
+      <span class="service-price-tag">${formatRp(s.price)}${s.isDaily?'/hari':''}</span>
+      <div class="qty-control">
+        <button type="button" class="qty-btn" data-act="dec">−</button>
+        <span class="qty-val" data-id="${s.id}">1</span>
+        <button type="button" class="qty-btn" data-act="inc">+</button>
+      </div>
+    `;
+    const chk = item.querySelector('input');
+    chk.addEventListener('change', ()=>{
+      item.classList.toggle('checked', chk.checked);
+      if(chk.checked && !serviceQuantities[s.id]) serviceQuantities[s.id] = 1;
+      if(!chk.checked) delete serviceQuantities[s.id];
+      updateSummary(); updateServicePrices();
+    });
+    item.querySelectorAll('.qty-btn').forEach(b=>{
+      b.addEventListener('click', ev=>{
+        ev.stopPropagation();
+        const cur = serviceQuantities[s.id] || 1;
+        const next = b.dataset.act==='inc' ? cur+1 : Math.max(1,cur-1);
+        serviceQuantities[s.id] = next;
+        item.querySelector('.qty-val').textContent = next;
+        updateSummary(); updateServicePrices();
+      });
+    });
+    item.addEventListener('click', e=>{ if(e.target.tagName==='BUTTON') return; chk.click(); });
+    cont.appendChild(item);
+  });
+}
 
-            services.forEach(service => {
-                const item = document.createElement('div');
-                item.className = 'service-item';
-                item.innerHTML = `
-                    <input type="checkbox" id="service-${service.id}" data-price="${service.price}" data-daily="false">
-                    <label for="service-${service.id}">
-                        <strong>${service.name}</strong>
-                        <span class="service-desc">${service.description}</span>
-                    </label>
-                    <span class="service-price">${formatRupiah(service.price)}</span>
-                `;
-                const checkbox = item.querySelector('input');
-                checkbox.addEventListener('change', () => {
-                    updateSummaryServices();
-                    item.style.borderColor = checkbox.checked ? 'var(--primary-color)' : 'var(--border-color)';
-                    item.style.background = checkbox.checked ? 'var(--primary-light)' : 'var(--card-bg)';
-                });
-                container.appendChild(item);
-            });
-        }
+function populateAdditional(gameId){
+  const list = formData.additionalServices[gameId] || [];
+  const cont = document.getElementById('additionalServicesContainer');
+  cont.innerHTML = '';
+  if(!list.length){ cont.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">Belum ada layanan tambahan.</p>'; return; }
+  list.forEach(s=>{
+    const item = document.createElement('div');
+    item.className = 'service-item';
+    item.innerHTML = `
+      <input type="checkbox" id="chk-${s.id}" data-id="${s.id}" data-price="${s.price}" data-daily="${s.isDaily}" data-name="${escapeHtml(s.name)}">
+      <div class="service-info">
+        <strong>${escapeHtml(s.name)}</strong>
+        <span>${escapeHtml(s.description)}</span>
+      </div>
+      <span class="service-price-tag">${formatRp(s.price)}</span>
+      <div class="qty-control">
+        <button type="button" class="qty-btn" data-act="dec">−</button>
+        <span class="qty-val" data-id="${s.id}">1</span>
+        <button type="button" class="qty-btn" data-act="inc">+</button>
+      </div>
+    `;
+    const chk = item.querySelector('input');
+    chk.addEventListener('change', ()=>{
+      item.classList.toggle('checked', chk.checked);
+      if(chk.checked && !serviceQuantities[s.id]) serviceQuantities[s.id] = 1;
+      if(!chk.checked) delete serviceQuantities[s.id];
+      updateSummary(); updateServicePrices();
+    });
+    item.querySelectorAll('.qty-btn').forEach(b=>{
+      b.addEventListener('click', ev=>{
+        ev.stopPropagation();
+        const cur = serviceQuantities[s.id] || 1;
+        const next = b.dataset.act==='inc' ? cur+1 : Math.max(1,cur-1);
+        serviceQuantities[s.id] = next;
+        item.querySelector('.qty-val').textContent = next;
+        updateSummary(); updateServicePrices();
+      });
+    });
+    item.addEventListener('click', e=>{ if(e.target.tagName==='BUTTON') return; chk.click(); });
+    cont.appendChild(item);
+  });
+}
 
-        function selectPaymentMethod(methodId) {
-            selectedPaymentMethod = methodId;
-            
-            document.querySelectorAll('.payment-method').forEach(m => {
-                m.classList.toggle('selected', m.dataset.id === methodId);
-            });
-            
-            const methodName = formData.paymentMethods.find(p => p.id === methodId).name;
-            document.getElementById('summaryPayment').textContent = methodName;
-            document.getElementById('paymentError').classList.remove('show');
-            showToast(`${methodName} dipilih`, 'success');
-        }
+function updateServicePrices(){
+  document.querySelectorAll('.service-item').forEach(item=>{
+    const chk = item.querySelector('input[type=checkbox]');
+    if(!chk) return;
+    const price = parseInt(chk.dataset.price)||0;
+    const isDaily = chk.dataset.daily==='true';
+    const qty = serviceQuantities[chk.dataset.id] || 1;
+    const days = isDaily ? eventDurationDays : 1;
+    const total = price * qty * days;
+    const tag = item.querySelector('.service-price-tag');
+    if(tag){
+      tag.textContent = formatRp(total) + (isDaily?(' ×'+days+'h'):'') + (qty>1?(' ×'+qty):'');
+    }
+  });
+}
 
-        // ==================== SUMMARY UPDATE ====================
-        function updateSummaryGame() {
-            const game = formData.games.find(g => g.id === selectedGame);
-            document.getElementById('summaryGame').textContent = game ? game.name : '-';
-        }
+function selectPayment(id){
+  selectedPayment = id;
+  document.querySelectorAll('.payment-card').forEach(c=>c.classList.toggle('selected', c.dataset.id===id));
+  document.getElementById('paymentError').classList.remove('show');
+  updateSummary();
+  showToast(formData.paymentMethods.find(p=>p.id===id).name + ' dipilih','success');
+}
 
-        function updateSummaryServices() {
-            const checkboxes = document.querySelectorAll(
-                '#serviceOptions input[type="checkbox"]:checked, #additionalServicesContainer input[type="checkbox"]:checked'
-            );
-            
-            const summaryServices = document.getElementById('summaryServices');
-            const summaryTotal = document.getElementById('summaryTotal');
-            
-            if (checkboxes.length === 0) {
-                summaryServices.innerHTML = '<div class="empty">Belum ada layanan dipilih</div>';
-                summaryTotal.textContent = 'Rp 0';
-                summaryTotal.classList.add('empty');
-                return;
-            }
+/* ============================================================
+   SUMMARY
+============================================================ */
+function updateSummary(){
+  document.getElementById('s_fullName').textContent = reqVal('fullName') || '-';
+  document.getElementById('s_community').textContent = reqVal('communityName') || '-';
+  document.getElementById('s_wa').textContent = reqVal('whatsappNumber') || '-';
+  document.getElementById('s_eventName').textContent = reqVal('eventName') || '-';
 
-            let total = 0;
-            let html = '';
-            
-            checkboxes.forEach(cb => {
-                const price = parseInt(cb.dataset.price) || 0;
-                const isDaily = cb.dataset.daily === 'true';
-                const days = isDaily ? eventDuration : 1;
-                const subtotal = price * days;
-                total += subtotal;
-                
-                const name = cb.nextElementSibling.querySelector('strong').textContent;
-                const priceLabel = isDaily ? `${formatRupiah(price)} × ${days}h` : formatRupiah(subtotal);
-                html += `
-                    <div class="summary-service-item">
-                        <span class="name">${name}</span>
-                        <span class="price">${priceLabel}</span>
-                    </div>
-                `;
-            });
+  const game = formData.games.find(g=>g.id===selectedGame);
+  document.getElementById('s_game').textContent = game ? game.name : '-';
 
-            summaryServices.innerHTML = html;
-            summaryTotal.textContent = formatRupiah(total);
-            summaryTotal.classList.remove('empty');
-        }
+  const s = reqVal('eventDateStart'), e = reqVal('eventDateEnd');
+  document.getElementById('s_date').textContent = s ? (formatDate(s) + (e && e!==s ? ' — ' + formatDate(e) : '')) : '-';
+  document.getElementById('s_days').textContent = eventDurationDays ? (eventDurationDays + ' hari') : '-';
+  document.getElementById('s_hours').textContent = hoursPerDay ? (hoursPerDay.toFixed(1).replace('.0','') + ' jam') : '-';
+  const totalH = eventDurationDays && hoursPerDay ? (eventDurationDays*hoursPerDay) : 0;
+  document.getElementById('s_totalHours').textContent = totalH ? (totalH.toFixed(1).replace('.0','') + ' jam') : '-';
 
-        // ==================== SUBMIT ====================
-        function submitForm() {
-            const adminNumbers = {
-                shift1: '6288991734780',
-                shift2: '6288991734780'
-            };
+  // services
+  const checked = document.querySelectorAll('#serviceOptions input[type=checkbox]:checked, #additionalServicesContainer input[type=checkbox]:checked');
+  const listEl = document.getElementById('summaryServices');
+  const totalEl = document.getElementById('summaryTotal');
+  let total = 0;
+  if(!checked.length){
+    listEl.innerHTML = '<div class="empty">Belum ada layanan dipilih</div>';
+    totalEl.textContent = 'Rp 0'; totalEl.classList.add('empty');
+  } else {
+    let html = '';
+    checked.forEach(c=>{
+      const price = parseInt(c.dataset.price)||0;
+      const isDaily = c.dataset.daily==='true';
+      const qty = serviceQuantities[c.dataset.id]||1;
+      const days = isDaily ? eventDurationDays : 1;
+      const sub = price*qty*days;
+      total += sub;
+      const label = isDaily ? (qty + ' × ' + days + 'h') : (qty>1?('×'+qty):'');
+      html += '<div class="item"><span class="n">'+escapeHtml(c.dataset.name)+' '+label+'</span><span class="p">'+formatRp(sub)+'</span></div>';
+    });
+    listEl.innerHTML = html;
+    totalEl.textContent = formatRp(total);
+    totalEl.classList.remove('empty');
+  }
+  updateServicePrices();
 
-            const hours = new Date().getHours();
-            const adminNumber = (hours >= 5 && hours < 13) ? adminNumbers.shift1 : adminNumbers.shift2;
+  // payment
+  const pm = formData.paymentMethods.find(p=>p.id===selectedPayment);
+  document.getElementById('s_payment').textContent = pm ? pm.name : '-';
+  const pt = document.getElementById('paymentType');
+  document.getElementById('s_paymentType').textContent = pt ? pt.value : '-';
+}
 
-            let serviceDetails = "";
-            let totalAmount = 0;
-            
-            document.querySelectorAll(
-                '#serviceOptions input[type="checkbox"]:checked, #additionalServicesContainer input[type="checkbox"]:checked'
-            ).forEach(item => {
-                const price = parseInt(item.dataset.price) || 0;
-                const isDaily = item.dataset.daily === 'true';
-                const days = isDaily ? eventDuration : 1;
-                const serviceName = item.nextElementSibling.querySelector('strong').textContent;
-                const subtotal = price * days;
-                
-                totalAmount += subtotal;
-                
-                serviceDetails += `➤ ${serviceName}\n`;
-                serviceDetails += `   Harga: ${formatRupiah(price)}`;
-                if (isDaily) serviceDetails += ` × ${days} hari`;
-                serviceDetails += `\n   Subtotal: ${formatRupiah(subtotal)}\n\n`;
-            });
+/* ============================================================
+   DRAFT
+============================================================ */
+function collectFormData(){
+  const data = {};
+  document.querySelectorAll('input, select, textarea').forEach(el=>{
+    if(!el.id) return;
+    if(el.type==='checkbox') data[el.id] = el.checked;
+    else data[el.id] = el.value;
+  });
+  data._step = currentStep;
+  data._game = selectedGame;
+  data._payment = selectedPayment;
+  data._qty = serviceQuantities;
+  data._savedAt = new Date().toLocaleString('id-ID');
+  return data;
+}
+function saveDraft(){
+  const data = collectFormData();
+  localStorage.setItem('sabada_draft', JSON.stringify(data));
+  showToast('Draft berhasil disimpan','success');
+  document.getElementById('draftBanner').style.display='flex';
+  document.getElementById('draftText').textContent = 'Draft tersimpan: ' + data._savedAt;
+}
+function loadDraft(){
+  const raw = localStorage.getItem('sabada_draft');
+  if(!raw) return;
+  try{
+    const d = JSON.parse(raw);
+    Object.entries(d).forEach(([k,v])=>{
+      if(k.startsWith('_')) return;
+      const el = document.getElementById(k);
+      if(!el) return;
+      if(el.type==='checkbox') el.checked = v;
+      else el.value = v;
+    });
+    if(d._game) selectGame(d._game);
+    if(d._payment) selectPayment(d._payment);
+    if(d._qty){ serviceQuantities = d._qty; }
+    updateSummary(); updateServicePrices();
+    if(d._step) goToStep(d._step);
+    showToast('Draft berhasil dimuat','success');
+  } catch(e){ showToast('Gagal memuat draft','error'); }
+}
+function clearDraft(){
+  localStorage.removeItem('sabada_draft');
+  document.getElementById('draftBanner').style.display='none';
+  showToast('Draft dihapus','info');
+}
 
-            const gameName = formData.games.find(g => g.id === selectedGame)?.name || '-';
-            const paymentName = formData.paymentMethods.find(p => p.id === selectedPaymentMethod)?.name || '-';
+/* ============================================================
+   COPY SUMMARY
+============================================================ */
+function copySummary(){
+  const lines = [];
+  lines.push('RINGKASAN PENGAJUAN JASA EO — SABADA ORGANIZER');
+  lines.push('==========================================');
+  lines.push('PEMESAN');
+  lines.push('  Nama       : ' + (reqVal('fullName')||'-'));
+  lines.push('  Komunitas  : ' + (reqVal('communityName')||'-'));
+  lines.push('  WhatsApp   : ' + (reqVal('whatsappNumber')||'-'));
+  lines.push('');
+  lines.push('EVENT');
+  lines.push('  Nama       : ' + (reqVal('eventName')||'-'));
+  const g = formData.games.find(x=>x.id===selectedGame);
+  lines.push('  Game       : ' + (g?g.name:'-'));
+  lines.push('  Tanggal    : ' + (reqVal('eventDateStart')||'-') + ' s/d ' + (reqVal('eventDateEnd')||'-'));
+  lines.push('  Total Hari : ' + eventDurationDays + ' hari');
+  lines.push('  Jam/Hari   : ' + hoursPerDay + ' jam');
+  lines.push('');
+  lines.push('LAYANAN');
+  const checked = document.querySelectorAll('#serviceOptions input[type=checkbox]:checked, #additionalServicesContainer input[type=checkbox]:checked');
+  let total = 0;
+  checked.forEach(c=>{
+    const price = parseInt(c.dataset.price)||0;
+    const isDaily = c.dataset.daily==='true';
+    const qty = serviceQuantities[c.dataset.id]||1;
+    const days = isDaily ? eventDurationDays : 1;
+    const sub = price*qty*days; total += sub;
+    lines.push('  - ' + c.dataset.name + ' × ' + qty + (isDaily?(' × '+days+' hari'):'') + ' = ' + formatRp(sub));
+  });
+  lines.push('  TOTAL      : ' + formatRp(total));
+  const pm = formData.paymentMethods.find(p=>p.id===selectedPayment);
+  lines.push('  Bayar via  : ' + (pm?pm.name:'-'));
+  const txt = lines.join('\n');
+  navigator.clipboard.writeText(txt).then(()=>showToast('Ringkasan disalin ke clipboard','success')).catch(()=>showToast('Gagal menyalin','error'));
+}
 
-            const message = `*FORM PENGAJUAN JASA EO*\n` +
-                `━━━━━━━━━━━━━━━━━━━━\n\n` +
-                `*DATA PEMESAN*\n` +
-                `👤 Nama: ${document.getElementById('fullName').value}\n` +
-                `🏢 Komunitas: ${document.getElementById('communityName').value}\n` +
-                `📱 WhatsApp: ${document.getElementById('whatsappNumber').value}\n\n` +
-                `*DETAIL EVENT*\n` +
-                `🎮 Game: ${gameName}\n` +
-                `📅 Tanggal: ${formatDate(document.getElementById('eventDate').value)}\n` +
-                `⏱️ Durasi: ${eventDuration} hari\n\n` +
-                `*LAYANAN DIPILIH*\n${serviceDetails}` +
-                `*TOTAL PEMBAYARAN*\n` +
-                `💰 ${formatRupiah(totalAmount)}\n\n` +
-                `*METODE PEMBAYARAN*\n` +
-                `💳 ${paymentName}\n\n` +
-                `✅ Saya menyetujui syarat & ketentuan yang berlaku.\n\n` +
-                `━━━━━━━━━━━━━━━━━━━━\n` +
-                `_Dikirim via Form SABADA Organizer_`;
+/* ============================================================
+   SUBMIT
+============================================================ */
+function submitForm(){
+  const adminNumbers = { shift1:'6288991734780', shift2:'6288991734780' };
+  const h = new Date().getHours();
+  const admin = (h>=5 && h<13) ? adminNumbers.shift1 : adminNumbers.shift2;
 
-            const encodedMessage = encodeURIComponent(message);
-            
-            document.getElementById('successModal').classList.add('show');
-            
-            setTimeout(() => {
-                window.open(`https://wa.me/${adminNumber}?text=${encodedMessage}`, '_blank');
-            }, 1200);
-        }
-    </script>
+  const game = formData.games.find(g=>g.id===selectedGame);
+  const pm = formData.paymentMethods.find(p=>p.id===selectedPayment);
+
+  let svc = '';
+  let total = 0;
+  document.querySelectorAll('#serviceOptions input[type=checkbox]:checked, #additionalServicesContainer input[type=checkbox]:checked').forEach(c=>{
+    const price = parseInt(c.dataset.price)||0;
+    const isDaily = c.dataset.daily==='true';
+    const qty = serviceQuantities[c.dataset.id]||1;
+    const days = isDaily ? eventDurationDays : 1;
+    const sub = price*qty*days; total += sub;
+    svc += '- ' + c.dataset.name + '\n';
+    svc += '  Qty: ' + qty + (isDaily?(' | Durasi: '+days+' hari'):'') + '\n';
+    svc += '  Harga: ' + formatRp(price) + (isDaily?'/hari':'') + '\n';
+    svc += '  Subtotal: ' + formatRp(sub) + '\n\n';
+  });
+
+  const totalHours = (eventDurationDays * hoursPerDay).toFixed(1).replace('.0','');
+
+  const msg =
+`FORM PENGAJUAN JASA EO — SABADA ORGANIZER
+==========================================
+
+DATA PEMESAN
+Nama Lengkap      : ${reqVal('fullName')}
+Nama Panggilan    : ${reqVal('nickname')||'-'}
+Email             : ${reqVal('email')}
+WhatsApp          : ${reqVal('whatsappNumber')}
+WA Cadangan       : ${reqVal('whatsappBackup')||'-'}
+Discord           : ${reqVal('discord')||'-'}
+Instagram         : ${reqVal('instagram')||'-'}
+NIK               : ${reqVal('nik')||'-'}
+Tanggal Lahir     : ${reqVal('birthDate')||'-'}
+Alamat            : ${reqVal('address')}
+Kota              : ${reqVal('city')}
+Provinsi          : ${reqVal('province')}
+Kode Pos          : ${reqVal('postalCode')||'-'}
+
+KOMUNITAS
+Nama Komunitas    : ${reqVal('communityName')}
+Jenis             : ${reqVal('communityType')||'-'}
+Jumlah Anggota    : ${reqVal('memberCount')||'-'}
+Tahun Berdiri     : ${reqVal('foundedYear')||'-'}
+Instagram         : ${reqVal('communityInstagram')||'-'}
+Website           : ${reqVal('communityWebsite')||'-'}
+
+KONTAK DARURAT
+Nama              : ${reqVal('emergencyName')||'-'}
+No. HP            : ${reqVal('emergencyPhone')||'-'}
+
+DETAIL EVENT
+Nama Event        : ${reqVal('eventName')}
+Jenis Event       : ${reqVal('eventType')}
+Skala             : ${reqVal('eventScale')||'-'}
+Tanggal Mulai     : ${reqVal('eventDateStart')}
+Tanggal Selesai   : ${reqVal('eventDateEnd')}
+Jam Mulai         : ${reqVal('eventStartTime')} WIB
+Jam Selesai       : ${reqVal('eventEndTime')} WIB
+Jam per Hari      : ${hoursPerDay} jam
+Total Hari        : ${eventDurationDays} hari
+Total Jam         : ${totalHours} jam
+Zona Waktu        : ${reqVal('timezone')}
+Platform Event    : ${reqVal('eventPlatform')||'-'}
+Jumlah Peserta    : ${reqVal('participantCount')}
+Jumlah Tim/Slot   : ${reqVal('teamCount')||'-'}
+Format Pertandingan: ${reqVal('formatPertandingan')||'-'}
+Lokasi / Venue    : ${reqVal('locationName')||'-'}
+Alamat Lokasi     : ${reqVal('locationAddress')||'-'}
+
+KATEGORI GAME
+Game              : ${game?game.name:'-'}
+Mode Permainan    : ${reqVal('gameMode')||'-'}
+Platform Bermain  : ${reqVal('gamePlatform')||'-'}
+Region Server     : ${reqVal('gameRegion')||'-'}
+Format Match      : ${reqVal('matchFormat')||'-'}
+
+SPESIFIKASI BROADCAST
+Resolusi          : ${reqVal('streamResolution')||'-'}
+Bitrate           : ${reqVal('streamBitrate')||'-'} Mbps
+Frame Rate        : ${reqVal('streamFps')||'-'} FPS
+Gaya Overlay      : ${reqVal('overlayStyle')||'-'}
+Bahasa Overlay    : ${reqVal('overlayLanguage')||'-'}
+Gender Caster     : ${reqVal('casterGender')||'-'}
+Bahasa Caster     : ${reqVal('casterLanguage')||'-'}
+Jumlah Caster     : ${reqVal('casterCount')||'-'}
+
+LAYANAN DIPILIH
+${svc}TOTAL PEMBAYARAN
+${formatRp(total)}
+
+METODE PEMBAYARAN
+Metode            : ${pm?pm.name:'-'}
+Nama Pemilik      : ${reqVal('paymentName')||'-'}
+Jenis Pembayaran  : ${reqVal('paymentType')}
+Tanggal Bayar     : ${reqVal('paymentDate')||'-'}
+Referensi         : ${reqVal('invoiceRef')||'-'}
+
+REQUEST KHUSUS
+${reqVal('specialRequest')||'-'}
+Referensi Visual  : ${reqVal('referenceUrl')||'-'}
+
+Tanda tangan: ${reqVal('signature')}
+Tanggal Pengajuan: ${new Date().toLocaleString('id-ID')}
+
+Saya menyetujui seluruh Syarat & Ketentuan SABADA Organizer.`;
+
+  document.getElementById('successModal').classList.add('show');
+  setTimeout(()=>{
+    window.open('https://wa.me/' + admin + '?text=' + encodeURIComponent(msg), '_blank');
+  }, 1200);
+}
+</script>
 </body>
 </html>
